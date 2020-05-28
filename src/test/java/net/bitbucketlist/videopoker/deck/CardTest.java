@@ -1,4 +1,4 @@
-package net.bitbucketlist.deck;
+package net.bitbucketlist.videopoker.deck;
 
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static net.bitbucketlist.deck.Suit.*;
+import static net.bitbucketlist.videopoker.deck.Suit.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CardTest {

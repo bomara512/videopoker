@@ -1,4 +1,4 @@
-package net.bitbucketlist.deck;
+package net.bitbucketlist.videopoker.deck;
 
 import java.util.ArrayList;
 import java.util.Collections;

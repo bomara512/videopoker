@@ -1,8 +1,8 @@
-package net.bitbucketlist.deck;
+package net.bitbucketlist.videopoker.deck;
 
 import org.junit.jupiter.api.Test;
 
-import static net.bitbucketlist.deck.Rank.*;
+import static net.bitbucketlist.videopoker.deck.Rank.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RankTest {

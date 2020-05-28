@@ -1,4 +1,4 @@
-package net.bitbucketlist.deck;
+package net.bitbucketlist.videopoker.deck;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
