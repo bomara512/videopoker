@@ -16,17 +16,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://gitlab.com/api/v4/projects/19019961/packages/maven"
-        name "GitLab"
-        credentials(HttpHeaderCredentials) {
-            name = 'Job-Token'
-            value = '${CI_JOB_TOKEN}'
-        }
-        authentication {
-            header(HttpHeaderAuthentication)
-        }
-    }
 }
 
 dependencies {
