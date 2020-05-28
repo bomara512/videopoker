@@ -1,3 +1,3 @@
-# deck
+# videopoker
 
-Deck of cards
+Video Poker
