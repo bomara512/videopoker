@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameMapperTest {
@@ -18,12 +17,12 @@ class GameMapperTest {
     void mapToDto_newGame() {
         UUID gameId = UUID.randomUUID();
 
-        GameEntity gameEntity = new GameEntity(new Deck(), 1, emptyList());
+        GameEntity gameEntity = new GameEntity(new Deck(), 1);
         gameEntity.setId(gameId);
 
         GameDto actual = subject.mapToDto(gameEntity);
 
-        GameDto expected = new GameDto(gameId, 52, 1, emptyList());
+        GameDto expected = new GameDto(gameId, 52, 1);
 
         assertThat(actual).isEqualTo(expected);
     }
