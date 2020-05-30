@@ -55,6 +55,16 @@ class GameControllerIT {
     }
 
     @Test
+    void changeBet_invalidState() throws Exception {
+        GameDto game = gameService.createGame();
+        gameService.deal(game.getId());
+
+        mockMvc.perform(put("/game/" + game.getId() + "/bet?currentBet=5"))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.message").value("Unable to deal for gameId: " + game.getId()));
+    }
+
+    @Test
     void changeBet_gameNotFound() throws Exception {
         UUID nonExistentGameId = UUID.randomUUID();
 

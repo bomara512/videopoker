@@ -27,6 +27,10 @@ public class GameService {
     public GameDto setCurrentBet(UUID gameId, int currentBet) {
         GameEntity gameEntity = getGameEntity(gameId);
 
+        if (gameEntity.getGameState() != GameState.READY_TO_DEAL) {
+            throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
+        }
+
         gameEntity.setCurrentBet(currentBet);
 
         gameRepository.save(gameEntity);
