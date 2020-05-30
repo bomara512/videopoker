@@ -1,8 +1,11 @@
 package net.bitbucketlist.videopoker;
 
+import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
 import net.bitbucketlist.videopoker.persistence.GameEntity;
 import org.springframework.stereotype.Component;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class GameMapper {
@@ -10,7 +13,11 @@ public class GameMapper {
         return new GameDto(
             gameEntity.getId(),
             gameEntity.getDeck().size(),
-            gameEntity.getCurrentBet()
+            gameEntity.getCurrentBet(),
+            gameEntity.getCurrentHand()
+                .stream()
+                .map(card -> new CardDto(card.getSuit(), card.getRank()))
+                .collect(toList())
         );
     }
 }

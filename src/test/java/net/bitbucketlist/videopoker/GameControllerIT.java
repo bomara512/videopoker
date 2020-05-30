@@ -30,6 +30,8 @@ class GameControllerIT {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.currentBet").value(1))
+            .andExpect(jsonPath("$.currentHand").isArray())
+            .andExpect(jsonPath("$.currentHand").isEmpty())
             .andExpect(jsonPath("$.cardsRemainingInDeck").value(52));
     }
 
@@ -51,5 +53,15 @@ class GameControllerIT {
         mockMvc.perform(put("/game/" + nonExistentGameId + "/bet?currentBet=5"))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.message").value("Game " + nonExistentGameId + " does not exist"));
+    }
+
+    @Test
+    void deal() throws Exception {
+        GameDto game = gameService.createGame();
+
+        mockMvc.perform(put("/game/" + game.getId() + "/deal"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.currentHand.length()").value(5))
+            .andExpect(jsonPath("$.cardsRemainingInDeck").value(47));
     }
 }

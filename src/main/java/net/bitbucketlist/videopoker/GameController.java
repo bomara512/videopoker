@@ -25,6 +25,11 @@ public class GameController {
         return gameService.setCurrentBet(gameId, currentBet);
     }
 
+    @PutMapping(path = "/game/{gameId}/deal")
+    public GameDto deal(@PathVariable UUID gameId) {
+        return gameService.deal(gameId);
+    }
+
     @ExceptionHandler({InvalidGameStateException.class})
     public ResponseEntity<GameErrorResponse> handleException(InvalidGameStateException e) {
         return new ResponseEntity<>(new GameErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
