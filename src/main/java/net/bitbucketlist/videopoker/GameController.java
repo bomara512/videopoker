@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,6 +34,11 @@ public class GameController {
     @ExceptionHandler({InvalidGameStateException.class})
     public ResponseEntity<GameErrorResponse> handleException(InvalidGameStateException e) {
         return new ResponseEntity<>(new GameErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping(path = "/game/{gameId}/draw")
+    public GameDto draw(@PathVariable UUID gameId, @RequestParam List<Integer> holds) {
+        return gameService.draw(gameId, holds);
     }
 
     @Value

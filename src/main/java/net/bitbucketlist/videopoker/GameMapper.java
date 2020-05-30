@@ -17,7 +17,8 @@ public class GameMapper {
             gameEntity.getCurrentHand()
                 .stream()
                 .map(card -> new CardDto(card.getSuit(), card.getRank()))
-                .collect(toList())
+                .collect(toList()),
+            gameEntity.getGameState()
         );
     }
 }

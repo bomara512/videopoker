@@ -1,5 +1,6 @@
 package net.bitbucketlist.videopoker.builder;
 
+import net.bitbucketlist.videopoker.GameState;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
 
@@ -12,6 +13,7 @@ public final class GameDtoBuilder {
     private int cardsRemainingInDeck = 52;
     private Integer currentBet = 1;
     private List<CardDto> currentHand = new ArrayList<>();
+    private GameState gameState;
 
     private GameDtoBuilder() {
     }
@@ -40,7 +42,12 @@ public final class GameDtoBuilder {
         return this;
     }
 
+    public GameDtoBuilder gameState(GameState gameState) {
+        this.gameState = gameState;
+        return this;
+    }
+
     public GameDto build() {
-        return new GameDto(id, cardsRemainingInDeck, currentBet, currentHand);
+        return new GameDto(id, cardsRemainingInDeck, currentBet, currentHand, gameState);
     }
 }

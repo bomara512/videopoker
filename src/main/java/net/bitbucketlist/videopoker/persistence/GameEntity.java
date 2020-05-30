@@ -2,6 +2,7 @@ package net.bitbucketlist.videopoker.persistence;
 
 import lombok.Data;
 import lombok.NonNull;
+import net.bitbucketlist.videopoker.GameState;
 import net.bitbucketlist.videopoker.deck.Card;
 import net.bitbucketlist.videopoker.deck.Deck;
 import org.springframework.data.annotation.Id;
@@ -25,4 +26,7 @@ public class GameEntity {
 
     @NonNull
     private List<Card> currentHand = new ArrayList<>();
+
+    @NonNull
+    private GameState gameState = GameState.READY_TO_DEAL;
 }

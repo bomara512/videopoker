@@ -12,8 +12,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static net.bitbucketlist.videopoker.builder.GameDtoBuilder.gameDtoBuilder;
-import static net.bitbucketlist.videopoker.builder.GameEntityBuilder.gameEntityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameMapperTest {
@@ -29,7 +27,7 @@ class GameMapperTest {
 
         GameDto actual = subject.mapToDto(gameEntity);
 
-        GameDto expected = new GameDto(gameId, 52, 1, emptyList());
+        GameDto expected = new GameDto(gameId, 52, 1, emptyList(), GameState.READY_TO_DEAL);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -41,12 +39,10 @@ class GameMapperTest {
         Deck deck = new Deck();
         List<Card> currentHand = deck.deal(5);
 
-        GameEntity gameEntity = gameEntityBuilder()
-            .id(gameId)
-            .currentBet(1)
-            .deck(deck)
-            .currentHand(currentHand)
-            .build();
+        GameEntity gameEntity = new GameEntity(deck, 1);
+        gameEntity.setId(gameId);
+        gameEntity.setDeck(deck);
+        gameEntity.setCurrentHand(currentHand);
 
         GameDto actual = subject.mapToDto(gameEntity);
 
@@ -55,12 +51,7 @@ class GameMapperTest {
             .map(card -> new CardDto(card.getSuit(), card.getRank()))
             .collect(Collectors.toList());
 
-        GameDto expected = gameDtoBuilder()
-            .id(gameId)
-            .currentBet(1)
-            .cardsRemainingInDeck(47)
-            .currentHand(expectedHand)
-            .build();
+        GameDto expected = new GameDto(gameId, 47, 1, expectedHand, GameState.READY_TO_DEAL);
 
         assertThat(actual).isEqualTo(expected);
     }
