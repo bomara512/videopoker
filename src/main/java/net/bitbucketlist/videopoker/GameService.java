@@ -18,8 +18,12 @@ public class GameService {
     private final GameMapper gameMapper;
 
     public GameDto createGame() {
-        GameEntity gameEntity = new GameEntity(new Deck(), 1);
-        GameEntity game = gameRepository.save(gameEntity);
+        Deck deck = new Deck();
+        deck.shuffle();
+
+        GameEntity game = gameRepository.save(
+            new GameEntity(deck, 1)
+        );
 
         return gameMapper.mapToDto(game);
     }

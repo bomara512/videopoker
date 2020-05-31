@@ -1,9 +1,12 @@
 package net.bitbucketlist.videopoker.deck;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@EqualsAndHashCode
 public class Deck {
     List<Card> deck = new ArrayList<>(52);
 
