@@ -1,14 +1,10 @@
 package net.bitbucketlist.videopoker.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import net.bitbucketlist.videopoker.deck.Rank;
 import net.bitbucketlist.videopoker.deck.Suit;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 public class CardDto {
     Suit suit;
     Rank rank;

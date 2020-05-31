@@ -22,12 +22,12 @@ class GameMapperTest {
     void mapToDto_newGame() {
         UUID gameId = UUID.randomUUID();
 
-        GameEntity gameEntity = new GameEntity(new Deck(), 1);
+        GameEntity gameEntity = new GameEntity(new Deck(), 1, 50);
         gameEntity.setId(gameId);
 
         GameDto actual = subject.mapToDto(gameEntity);
 
-        GameDto expected = new GameDto(gameId, 52, 1, emptyList(), GameState.READY_TO_DEAL);
+        GameDto expected = new GameDto(gameId, 52, 1, 50, emptyList(), GameState.READY_TO_DEAL);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -39,7 +39,7 @@ class GameMapperTest {
         Deck deck = new Deck();
         List<Card> currentHand = deck.deal(5);
 
-        GameEntity gameEntity = new GameEntity(deck, 1);
+        GameEntity gameEntity = new GameEntity(deck, 1, 50);
         gameEntity.setId(gameId);
         gameEntity.setDeck(deck);
         gameEntity.setCurrentHand(currentHand);
@@ -51,7 +51,7 @@ class GameMapperTest {
             .map(card -> new CardDto(card.getSuit(), card.getRank()))
             .collect(Collectors.toList());
 
-        GameDto expected = new GameDto(gameId, 47, 1, expectedHand, GameState.READY_TO_DEAL);
+        GameDto expected = new GameDto(gameId, 47, 1, 50, expectedHand, GameState.READY_TO_DEAL);
 
         assertThat(actual).isEqualTo(expected);
     }

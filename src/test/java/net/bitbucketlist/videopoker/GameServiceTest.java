@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
+import static net.bitbucketlist.videopoker.builder.GameDtoBuilder.gameDtoBuilder;
 import static net.bitbucketlist.videopoker.builder.GameEntityBuilder.gameEntityBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,7 +52,7 @@ class GameServiceTest {
     void createGame() {
         when(mockGameRepository.save(any(GameEntity.class))).thenReturn(gameEntity);
 
-        GameDto expected = new GameDto();
+        GameDto expected = gameDtoBuilder().build();
         when(mockGameMapper.mapToDto(any(GameEntity.class))).thenReturn(expected);
 
         GameDto actual = subject.createGame();
@@ -64,6 +65,7 @@ class GameServiceTest {
         assertThat(gameEntityCaptor.getValue().getCurrentBet()).isEqualTo(1);
         assertThat(gameEntityCaptor.getValue().getCurrentHand()).isEmpty();
         assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(52);
+        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(50);
     }
 
     @Test
@@ -90,7 +92,7 @@ class GameServiceTest {
     void deal() {
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
-        GameDto expected = new GameDto();
+        GameDto expected = gameDtoBuilder().build();
         when(mockGameMapper.mapToDto(gameEntity)).thenReturn(expected);
 
         GameDto actual = subject.deal(gameId);
@@ -99,6 +101,7 @@ class GameServiceTest {
 
         assertThat(actual).isSameAs(expected);
         assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(49);
     }
 
     @Test

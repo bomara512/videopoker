@@ -22,7 +22,7 @@ public class GameService {
         deck.shuffle();
 
         GameEntity game = gameRepository.save(
-            new GameEntity(deck, 1)
+            new GameEntity(deck, 1, 50)
         );
 
         return gameMapper.mapToDto(game);
@@ -32,7 +32,7 @@ public class GameService {
         GameEntity gameEntity = getGameEntity(gameId);
 
         if (gameEntity.getGameState() != GameState.READY_TO_DEAL) {
-            throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
+            throw new InvalidGameStateException("Unable to change bet for gameId: " + gameId);
         }
 
         gameEntity.setCurrentBet(currentBet);
@@ -49,11 +49,11 @@ public class GameService {
             throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
         }
 
-        gameEntity.setGameState(GameState.READY_TO_DRAW);
-
         List<Card> cards = gameEntity.getDeck().deal(5);
 
+        gameEntity.setGameState(GameState.READY_TO_DRAW);
         gameEntity.setCurrentHand(cards);
+        gameEntity.setCurrentBalance(gameEntity.getCurrentBalance() - gameEntity.getCurrentBet());
 
         gameRepository.save(gameEntity);
 

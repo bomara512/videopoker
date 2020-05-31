@@ -61,7 +61,7 @@ class GameControllerIT {
 
         mockMvc.perform(put("/game/" + game.getId() + "/bet?currentBet=5"))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.message").value("Unable to deal for gameId: " + game.getId()));
+            .andExpect(jsonPath("$.message").value("Unable to change bet for gameId: " + game.getId()));
     }
 
     @Test
@@ -76,11 +76,13 @@ class GameControllerIT {
     @Test
     void deal() throws Exception {
         GameDto game = gameService.createGame();
+        gameService.setCurrentBet(game.getId(), 5);
 
         mockMvc.perform(put("/game/" + game.getId() + "/deal"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.currentHand.length()").value(5))
-            .andExpect(jsonPath("$.cardsRemainingInDeck").value(47));
+            .andExpect(jsonPath("$.cardsRemainingInDeck").value(47))
+            .andExpect(jsonPath("$.currentBalance").value(45));
     }
 
     @Test

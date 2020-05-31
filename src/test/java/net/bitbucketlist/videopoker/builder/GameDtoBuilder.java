@@ -12,6 +12,7 @@ public final class GameDtoBuilder {
     private UUID id;
     private int cardsRemainingInDeck = 52;
     private Integer currentBet = 1;
+    private Integer currentBalance = 50;
     private List<CardDto> currentHand = new ArrayList<>();
     private GameState gameState;
 
@@ -37,6 +38,11 @@ public final class GameDtoBuilder {
         return this;
     }
 
+    public GameDtoBuilder currentBalance(int currentBalance) {
+        this.currentBalance = currentBalance;
+        return this;
+    }
+
     public GameDtoBuilder currentHand(List<CardDto> currentHand) {
         this.currentHand = currentHand;
         return this;
@@ -48,6 +54,6 @@ public final class GameDtoBuilder {
     }
 
     public GameDto build() {
-        return new GameDto(id, cardsRemainingInDeck, currentBet, currentHand, gameState);
+        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, gameState);
     }
 }

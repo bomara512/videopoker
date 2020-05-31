@@ -29,4 +29,6 @@ public class GameEntity {
 
     @NonNull
     private GameState gameState = GameState.READY_TO_DEAL;
+
+    @NonNull Integer currentBalance;
 }

@@ -14,6 +14,7 @@ public class GameMapper {
             gameEntity.getId(),
             gameEntity.getDeck().size(),
             gameEntity.getCurrentBet(),
+            gameEntity.getCurrentBalance(),
             gameEntity.getCurrentHand()
                 .stream()
                 .map(card -> new CardDto(card.getSuit(), card.getRank()))
