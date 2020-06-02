@@ -60,15 +60,6 @@ public class GameService {
         return gameMapper.mapToDto(gameEntity);
     }
 
-    private GameEntity getGameEntity(UUID gameId) {
-        return gameRepository
-            .findById(gameId)
-            .orElseThrow(() -> new InvalidGameStateException(
-                    String.format("Game %s does not exist", gameId)
-                )
-            );
-    }
-
     public GameDto draw(UUID gameId, List<Integer> holds) {
         GameEntity gameEntity = getGameEntity(gameId);
 
@@ -89,5 +80,14 @@ public class GameService {
         gameEntity = gameRepository.save(gameEntity);
 
         return gameMapper.mapToDto(gameEntity);
+    }
+
+    private GameEntity getGameEntity(UUID gameId) {
+        return gameRepository
+            .findById(gameId)
+            .orElseThrow(() -> new InvalidGameStateException(
+                    String.format("Game %s does not exist", gameId)
+                )
+            );
     }
 }

@@ -66,6 +66,7 @@ class GameServiceTest {
         assertThat(gameEntityCaptor.getValue().getCurrentHand()).isEmpty();
         assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(52);
         assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(50);
+        assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
     }
 
     @Test
@@ -102,6 +103,7 @@ class GameServiceTest {
         assertThat(actual).isSameAs(expected);
         assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
         assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(49);
+        assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DRAW);
     }
 
     @Test
