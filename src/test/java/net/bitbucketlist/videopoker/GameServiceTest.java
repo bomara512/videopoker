@@ -172,5 +172,21 @@ class GameServiceTest {
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage("Unable to draw for gameId: " + gameId);
     }
+
+    @Test
+    void getAllGames() {
+        GameEntity gameEntity1 = gameEntityBuilder().id(UUID.randomUUID()).build();
+        GameEntity gameEntity2 = gameEntityBuilder().id(UUID.randomUUID()).build();
+        when(mockGameRepository.findAll()).thenReturn(List.of(gameEntity1, gameEntity2));
+
+        GameDto gameDto1 = gameDtoBuilder().build();
+        GameDto gameDto2 = gameDtoBuilder().build();
+        when(mockGameMapper.mapToDto(gameEntity1)).thenReturn(gameDto1);
+        when(mockGameMapper.mapToDto(gameEntity2)).thenReturn(gameDto2);
+
+        List<GameDto> actual = subject.getAllGames();
+
+        assertThat(actual).containsExactly(gameDto1, gameDto2);
+    }
 }
 

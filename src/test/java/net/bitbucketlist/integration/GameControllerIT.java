@@ -1,8 +1,13 @@
-package net.bitbucketlist.videopoker;
+package net.bitbucketlist.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bitbucketlist.videopoker.GameService;
+import net.bitbucketlist.videopoker.GameState;
+import net.bitbucketlist.videopoker.VideoPokerApplication;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
+import net.bitbucketlist.videopoker.persistence.GameRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,8 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,7 +35,15 @@ class GameControllerIT {
     GameService gameService;
 
     @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
     ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        gameRepository.deleteAll();
+    }
 
     @Test
     void createGame() throws Exception {
@@ -41,6 +54,18 @@ class GameControllerIT {
             .andExpect(jsonPath("$.currentHand").isArray())
             .andExpect(jsonPath("$.currentHand").isEmpty())
             .andExpect(jsonPath("$.cardsRemainingInDeck").value(52));
+    }
+
+    @Test
+    void getAllGames() throws Exception {
+        GameDto game1 = gameService.createGame();
+        GameDto game2 = gameService.createGame();
+
+        mockMvc.perform(get("/game"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[*].id", containsInAnyOrder(game1.getId().toString(), game2.getId().toString())));
     }
 
     @Test

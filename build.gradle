@@ -27,6 +27,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'it.ozimov:embedded-redis:0.7.2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -34,6 +35,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    exclude("**/integration/**")
 }
 
 dockerCompose {

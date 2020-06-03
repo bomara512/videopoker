@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Integration Tests" type="JUnit" factoryName="JUnit">
+        <module name="videopoker.test"/>
+        <useClassPathOnly/>
+        <option name="MAIN_CLASS_NAME" value=""/>
+        <option name="METHOD_NAME" value=""/>
+        <option name="TEST_OBJECT" value="directory"/>
+        <option name="PARAMETERS" value=""/>
+        <envs>
+            <env name="SPRING_PROFILES_INCLUDE" value="integration"/>
+        </envs>
+        <dir value="$PROJECT_DIR$/src/test/java/net/bitbucketlist/integration"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

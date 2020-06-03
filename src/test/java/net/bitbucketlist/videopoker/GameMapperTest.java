@@ -24,6 +24,7 @@ class GameMapperTest {
 
         GameEntity gameEntity = new GameEntity(new Deck(), 1, 50);
         gameEntity.setId(gameId);
+        gameEntity.setCurrentHand(emptyList());
 
         GameDto actual = subject.mapToDto(gameEntity);
 

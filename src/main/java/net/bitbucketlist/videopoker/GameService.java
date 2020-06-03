@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class GameService {
         );
 
         return gameMapper.mapToDto(game);
+    }
+
+    public List<GameDto> getAllGames() {
+        return StreamSupport.stream(gameRepository.findAll().spliterator(), false)
+            .map(gameMapper::mapToDto)
+            .collect(Collectors.toList());
     }
 
     public GameDto setCurrentBet(UUID gameId, int currentBet) {

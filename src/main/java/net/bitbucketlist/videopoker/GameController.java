@@ -21,6 +21,11 @@ public class GameController {
         return gameService.createGame();
     }
 
+    @GetMapping(path = "/game")
+    public List<GameDto> getAllGames() {
+        return gameService.getAllGames();
+    }
+
     @PutMapping(path = "/game/{gameId}/bet")
     public GameDto changeBet(@PathVariable UUID gameId, @RequestParam int currentBet) {
         return gameService.setCurrentBet(gameId, currentBet);
