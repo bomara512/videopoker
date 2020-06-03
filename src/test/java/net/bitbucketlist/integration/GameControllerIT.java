@@ -3,6 +3,7 @@ package net.bitbucketlist.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bitbucketlist.videopoker.GameService;
 import net.bitbucketlist.videopoker.GameState;
+import net.bitbucketlist.videopoker.TestRedisConfiguration;
 import net.bitbucketlist.videopoker.VideoPokerApplication;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = VideoPokerApplication.class)
+@SpringBootTest(classes = {VideoPokerApplication.class, TestRedisConfiguration.class})
 @AutoConfigureMockMvc
 class GameControllerIT {
     @Autowired

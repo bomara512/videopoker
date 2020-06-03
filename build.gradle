@@ -33,6 +33,8 @@ dependencies {
     }
 }
 
+defaultTasks 'clean', 'test', 'integrationTest'
+
 test {
     useJUnitPlatform()
     exclude("**/integration/**")
@@ -40,4 +42,9 @@ test {
 
 dockerCompose {
     useComposeFiles = ['docker-compose.yml']
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    exclude("**/integration/**")
 }

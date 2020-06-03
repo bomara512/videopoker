@@ -1,4 +1,4 @@
-package net.bitbucketlist;
+package net.bitbucketlist.videopoker;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
