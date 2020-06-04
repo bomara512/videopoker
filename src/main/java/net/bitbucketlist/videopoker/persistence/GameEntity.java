@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@RedisHash("games")
+@RedisHash(value = "games", timeToLive = 60 * 60 * 24 * 7)
 public class GameEntity {
     @Id
     private UUID id;

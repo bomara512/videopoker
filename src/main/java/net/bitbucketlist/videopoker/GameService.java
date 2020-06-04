@@ -9,6 +9,7 @@ import net.bitbucketlist.videopoker.persistence.GameRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -32,6 +33,7 @@ public class GameService {
 
     public List<GameDto> getAllGames() {
         return StreamSupport.stream(gameRepository.findAll().spliterator(), false)
+            .filter(Objects::nonNull)
             .map(gameMapper::mapToDto)
             .collect(Collectors.toList());
     }
