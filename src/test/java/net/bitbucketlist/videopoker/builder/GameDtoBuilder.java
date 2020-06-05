@@ -3,6 +3,7 @@ package net.bitbucketlist.videopoker.builder;
 import net.bitbucketlist.videopoker.GameState;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
+import net.bitbucketlist.videopoker.scoring.PokerHandEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public final class GameDtoBuilder {
     private Integer currentBalance = 50;
     private List<CardDto> currentHand = new ArrayList<>();
     private GameState gameState;
+    private PokerHandEnum bestHand;
 
     private GameDtoBuilder() {
     }
@@ -53,7 +55,12 @@ public final class GameDtoBuilder {
         return this;
     }
 
+    public GameDtoBuilder bestHand(PokerHandEnum bestHand) {
+        this.bestHand = bestHand;
+        return this;
+    }
+
     public GameDto build() {
-        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, gameState);
+        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, gameState, bestHand);
     }
 }

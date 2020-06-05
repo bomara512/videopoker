@@ -3,6 +3,7 @@ package net.bitbucketlist.videopoker;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
 import net.bitbucketlist.videopoker.persistence.GameEntity;
+import net.bitbucketlist.videopoker.scoring.PokerHand;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
@@ -19,7 +20,8 @@ public class GameMapper {
                 .stream()
                 .map(card -> new CardDto(card.getSuit(), card.getRank()))
                 .collect(toList()),
-            gameEntity.getGameState()
+            gameEntity.getGameState(),
+            new PokerHand(gameEntity.getCurrentHand()).calculateBestHand()
         );
     }
 }

@@ -54,7 +54,10 @@ class GameControllerIT {
             .andExpect(jsonPath("$.currentBet").value(1))
             .andExpect(jsonPath("$.currentHand").isArray())
             .andExpect(jsonPath("$.currentHand").isEmpty())
-            .andExpect(jsonPath("$.cardsRemainingInDeck").value(52));
+            .andExpect(jsonPath("$.cardsRemainingInDeck").value(52))
+            .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DEAL.name()))
+            .andExpect(jsonPath("$.currentBalance").value(50))
+            .andExpect(jsonPath("$.bestHand").isEmpty());
     }
 
     @Test
@@ -106,9 +109,12 @@ class GameControllerIT {
 
         mockMvc.perform(put("/game/" + game.getId() + "/deal"))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(game.getId().toString()))
             .andExpect(jsonPath("$.currentHand.length()").value(5))
             .andExpect(jsonPath("$.cardsRemainingInDeck").value(47))
-            .andExpect(jsonPath("$.currentBalance").value(45));
+            .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DRAW.name()))
+            .andExpect(jsonPath("$.currentBalance").value(45))
+            .andExpect(jsonPath("$.bestHand").isNotEmpty());
     }
 
     @Test
@@ -141,6 +147,7 @@ class GameControllerIT {
             .andExpect(jsonPath("$.currentHand.length()").value(5))
             .andExpect(jsonPath("$.cardsRemainingInDeck").value(45))
             .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DEAL.name()))
+            .andExpect(jsonPath("$.bestHand").isNotEmpty())
             .andReturn();
 
         GameDto gameDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), GameDto.class);

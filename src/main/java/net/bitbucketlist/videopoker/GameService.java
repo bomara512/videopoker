@@ -1,11 +1,14 @@
 package net.bitbucketlist.videopoker;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import net.bitbucketlist.videopoker.deck.Card;
 import net.bitbucketlist.videopoker.deck.Deck;
 import net.bitbucketlist.videopoker.dto.GameDto;
 import net.bitbucketlist.videopoker.persistence.GameEntity;
 import net.bitbucketlist.videopoker.persistence.GameRepository;
+import net.bitbucketlist.videopoker.scoring.PayoutService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +19,11 @@ import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GameService {
-    private final GameRepository gameRepository;
-    private final GameMapper gameMapper;
+    GameRepository gameRepository;
+    GameMapper gameMapper;
+    PayoutService payoutService;
 
     public GameDto createGame() {
         Deck deck = new Deck();
@@ -86,6 +91,10 @@ public class GameService {
                 currentHand.set(i, gameEntity.getDeck().deal(1).get(0));
             }
         }
+
+        int payout = payoutService.calculatePayout(gameEntity.getCurrentHand(), gameEntity.getCurrentBet());
+
+        gameEntity.setCurrentBalance(gameEntity.getCurrentBalance() + payout);
 
         gameEntity = gameRepository.save(gameEntity);
 

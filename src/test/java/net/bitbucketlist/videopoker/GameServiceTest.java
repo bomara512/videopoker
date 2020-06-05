@@ -7,6 +7,7 @@ import net.bitbucketlist.videopoker.deck.Suit;
 import net.bitbucketlist.videopoker.dto.GameDto;
 import net.bitbucketlist.videopoker.persistence.GameEntity;
 import net.bitbucketlist.videopoker.persistence.GameRepository;
+import net.bitbucketlist.videopoker.scoring.PayoutService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,9 @@ class GameServiceTest {
 
     @Mock
     GameMapper mockGameMapper;
+
+    @Mock
+    PayoutService mockPayoutService;
 
     @InjectMocks
     GameService subject;
@@ -136,14 +140,17 @@ class GameServiceTest {
 
         gameEntity.setGameState(GameState.READY_TO_DRAW);
         gameEntity.setCurrentHand(new ArrayList<>(originalHand));
+        gameEntity.setCurrentBalance(100);
 
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+        when(mockPayoutService.calculatePayout(gameEntity.getCurrentHand(), gameEntity.getCurrentBet())).thenReturn(200);
 
         subject.draw(gameId, List.of(0, 4));
 
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
+        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(300);
 
         List<Card> updatedHand = gameEntityCaptor.getValue().getCurrentHand();
 
