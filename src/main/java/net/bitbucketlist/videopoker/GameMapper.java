@@ -20,8 +20,8 @@ public class GameMapper {
                 .stream()
                 .map(card -> new CardDto(card.getSuit(), card.getRank()))
                 .collect(toList()),
-            gameEntity.getGameState(),
-            new PokerHand(gameEntity.getCurrentHand()).calculateBestHand()
+            new PokerHand(gameEntity.getCurrentHand()).calculateBestHand(),
+            gameEntity.getGameState()
         );
     }
 }

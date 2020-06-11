@@ -21,6 +21,8 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GameService {
+    private static final int HAND_SIZE = 5;
+
     GameRepository gameRepository;
     GameMapper gameMapper;
     PayoutService payoutService;
@@ -64,7 +66,13 @@ public class GameService {
             throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
         }
 
-        List<Card> cards = gameEntity.getDeck().deal(5);
+        if (gameEntity.getDeck().size() < HAND_SIZE * 2) {
+            Deck newDeck = new Deck();
+            newDeck.shuffle();
+            gameEntity.setDeck(newDeck);
+        }
+
+        List<Card> cards = gameEntity.getDeck().deal(HAND_SIZE);
 
         gameEntity.setGameState(GameState.READY_TO_DRAW);
         gameEntity.setCurrentHand(cards);
@@ -82,11 +90,15 @@ public class GameService {
             throw new InvalidGameStateException("Unable to draw for gameId: " + gameId);
         }
 
+        if (gameEntity.getDeck().size() < HAND_SIZE) {
+            throw new InvalidGameStateException("Unable to draw for gameId: " + gameId);
+        }
+
         gameEntity.setGameState(GameState.READY_TO_DEAL);
 
         List<Card> currentHand = gameEntity.getCurrentHand();
 
-        for (int i = 0; i < currentHand.size(); i++) {
+        for (int i = 0; i < HAND_SIZE; i++) {
             if (!holds.contains(i)) {
                 currentHand.set(i, gameEntity.getDeck().deal(1).get(0));
             }

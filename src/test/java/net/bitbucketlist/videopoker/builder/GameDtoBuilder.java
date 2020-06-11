@@ -15,8 +15,8 @@ public final class GameDtoBuilder {
     private Integer currentBet = 1;
     private Integer currentBalance = 50;
     private List<CardDto> currentHand = new ArrayList<>();
-    private GameState gameState;
     private PokerHandEnum bestHand;
+    private GameState gameState;
 
     private GameDtoBuilder() {
     }
@@ -50,17 +50,17 @@ public final class GameDtoBuilder {
         return this;
     }
 
-    public GameDtoBuilder gameState(GameState gameState) {
-        this.gameState = gameState;
-        return this;
-    }
-
     public GameDtoBuilder bestHand(PokerHandEnum bestHand) {
         this.bestHand = bestHand;
         return this;
     }
 
+    public GameDtoBuilder gameState(GameState gameState) {
+        this.gameState = gameState;
+        return this;
+    }
+
     public GameDto build() {
-        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, gameState, bestHand);
+        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, bestHand, gameState);
     }
 }

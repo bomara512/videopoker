@@ -14,6 +14,6 @@ public class GameDto {
     int currentBet;
     int currentBalance;
     List<CardDto> currentHand;
-    GameState gameState;
     PokerHandEnum bestHand;
+    GameState gameState;
 }
