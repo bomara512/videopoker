@@ -28,23 +28,18 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {
-    private Deck UNSHUFFLED_DECK;
-
     @Mock
     GameRepository mockGameRepository;
-
     @Mock
     GameMapper mockGameMapper;
-
     @Mock
     PayoutService mockPayoutService;
-
     @InjectMocks
     GameService subject;
-
     UUID gameId;
     GameEntity gameEntity;
     ArgumentCaptor<GameEntity> gameEntityCaptor = ArgumentCaptor.forClass(GameEntity.class);
+    private Deck UNSHUFFLED_DECK;
 
     @BeforeEach
     void setUp() {
@@ -92,6 +87,40 @@ class GameServiceTest {
         assertThatThrownBy(() -> subject.setCurrentBet(gameId, 5))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage(String.format("Game %s does not exist", gameId));
+    }
+
+    @Test
+    void setCurrentBet_overMaxBet() {
+        when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+
+        subject.setCurrentBet(gameId, 5);
+
+        assertThatThrownBy(() -> subject.setCurrentBet(gameId, 6))
+            .isInstanceOf(InvalidGameStateException.class)
+            .hasMessage("Bet must be between 1 and 5. gameId: " + gameId);
+    }
+
+    @Test
+    void setCurrentBet_underMinBet() {
+        when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+
+        subject.setCurrentBet(gameId, 1);
+
+        assertThatThrownBy(() -> subject.setCurrentBet(gameId, -1))
+            .isInstanceOf(InvalidGameStateException.class)
+            .hasMessage("Bet must be between 1 and 5. gameId: " + gameId);
+    }
+
+    @Test
+    void setCurrentBet_notEnoughCredits() {
+        gameEntity.setCurrentBalance(3);
+        when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+
+        assertThatThrownBy(() -> subject.setCurrentBet(gameId, 5))
+            .isInstanceOf(InvalidGameStateException.class)
+            .hasMessage(
+                String.format("Not enough credits (%s requested, %s available). gameId: %s", 5, 3, gameId)
+            );
     }
 
     @Test

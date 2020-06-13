@@ -22,6 +22,8 @@ import java.util.stream.StreamSupport;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GameService {
     private static final int HAND_SIZE = 5;
+    private static final int MINIMUM_BET = 1;
+    private static final int MAXIMUM_BET = 5;
 
     GameRepository gameRepository;
     GameMapper gameMapper;
@@ -50,6 +52,18 @@ public class GameService {
 
         if (gameEntity.getGameState() != GameState.READY_TO_DEAL) {
             throw new InvalidGameStateException("Unable to change bet for gameId: " + gameId);
+        }
+
+        if (currentBet < MINIMUM_BET || currentBet > MAXIMUM_BET) {
+            throw new InvalidGameStateException(
+                String.format("Bet must be between %s and %s. gameId: %s", MINIMUM_BET, MAXIMUM_BET, gameId)
+            );
+        }
+
+        if (gameEntity.getCurrentBalance() < currentBet) {
+            throw new InvalidGameStateException(
+                String.format("Not enough credits (%s requested, %s available). gameId: %s", currentBet, gameEntity.getCurrentBalance(), gameId)
+            );
         }
 
         gameEntity.setCurrentBet(currentBet);
