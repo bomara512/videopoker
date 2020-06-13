@@ -142,7 +142,7 @@ class GameServiceTest {
 
     @Test
     void deal_notEnoughCardsLeft_startsFreshDeck() {
-        gameEntity.getDeck().deal(43);
+        gameEntity.getDeck().deal(42);
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
         GameDto expected = gameDtoBuilder().build();
@@ -225,6 +225,32 @@ class GameServiceTest {
         assertThatThrownBy(() -> subject.draw(gameId, Collections.emptyList()))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage("Unable to draw for gameId: " + gameId);
+    }
+
+    @Test
+    void draw_notEnoughCardsLeft_startsFreshDeck() {
+        gameEntity.getDeck().deal(42);
+        gameEntity.setCurrentHand(gameEntity.getDeck().deal(5));
+        gameEntity.setGameState(GameState.READY_TO_DRAW);
+
+        when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+
+        GameDto expected = gameDtoBuilder().build();
+        when(mockGameMapper.mapToDto(gameEntity)).thenReturn(expected);
+
+        GameDto actual = subject.draw(gameId, List.of(0, 1, 2, 3, 4));
+
+        verify(mockGameRepository).save(gameEntityCaptor.capture());
+
+        assertThat(actual).isSameAs(expected);
+        assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(52);
+        assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
+
+        List<Card> freshDeck = new ArrayList<>();
+        freshDeck.addAll(gameEntityCaptor.getValue().getCurrentHand());
+        freshDeck.addAll(gameEntityCaptor.getValue().getDeck().deal(47));
+        assertThat(freshDeck).isNotEqualTo(UNSHUFFLED_DECK.deal(52));
     }
 
     @Test

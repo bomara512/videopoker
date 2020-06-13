@@ -80,7 +80,7 @@ public class GameService {
             throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
         }
 
-        if (gameEntity.getDeck().size() < HAND_SIZE * 2) {
+        if (gameEntity.getDeck().size() <= HAND_SIZE * 2) {
             Deck newDeck = new Deck();
             newDeck.shuffle();
             gameEntity.setDeck(newDeck);
@@ -108,8 +108,6 @@ public class GameService {
             throw new InvalidGameStateException("Unable to draw for gameId: " + gameId);
         }
 
-        gameEntity.setGameState(GameState.READY_TO_DEAL);
-
         List<Card> currentHand = gameEntity.getCurrentHand();
 
         for (int i = 0; i < HAND_SIZE; i++) {
@@ -119,10 +117,17 @@ public class GameService {
         }
 
         int payout = payoutService.calculatePayout(gameEntity.getCurrentHand(), gameEntity.getCurrentBet());
-
         gameEntity.setCurrentBalance(gameEntity.getCurrentBalance() + payout);
 
-        gameEntity = gameRepository.save(gameEntity);
+        gameEntity.setGameState(GameState.READY_TO_DEAL);
+
+        if (gameEntity.getDeck().size() <= HAND_SIZE) {
+            Deck newDeck = new Deck();
+            newDeck.shuffle();
+            gameEntity.setDeck(newDeck);
+        }
+
+        gameRepository.save(gameEntity);
 
         return gameMapper.mapToDto(gameEntity);
     }
