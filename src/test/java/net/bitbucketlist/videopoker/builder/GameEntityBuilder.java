@@ -11,9 +11,9 @@ import java.util.UUID;
 public final class GameEntityBuilder {
     private UUID id;
     private Deck deck = new Deck();
-    private Integer currentBet = 1;
-    private Integer currentBalance = 50;
-    private List<Card> currentHand = new ArrayList<>();
+    private Integer bet = 1;
+    private Integer credits = 50;
+    private List<Card> hand = new ArrayList<>();
 
     private GameEntityBuilder() {
     }
@@ -32,25 +32,25 @@ public final class GameEntityBuilder {
         return this;
     }
 
-    public GameEntityBuilder currentBet(Integer currentBet) {
-        this.currentBet = currentBet;
+    public GameEntityBuilder bet(Integer bet) {
+        this.bet = bet;
         return this;
     }
 
-    public GameEntityBuilder currentBalance(Integer currentBalance) {
-        this.currentBalance = currentBalance;
+    public GameEntityBuilder credits(Integer credits) {
+        this.credits = credits;
         return this;
     }
 
-    public GameEntityBuilder currentHand(List<Card> currentHand) {
-        this.currentHand = currentHand;
+    public GameEntityBuilder hand(List<Card> hand) {
+        this.hand = hand;
         return this;
     }
 
     public GameEntity build() {
-        GameEntity gameEntity = new GameEntity(deck, currentBet, currentBalance);
+        GameEntity gameEntity = new GameEntity(deck, bet, credits);
         gameEntity.setId(id);
-        gameEntity.setCurrentHand(currentHand);
+        gameEntity.setHand(hand);
 
         return gameEntity;
     }

@@ -14,13 +14,13 @@ public class GameMapper {
         return new GameDto(
             gameEntity.getId(),
             gameEntity.getDeck().size(),
-            gameEntity.getCurrentBet(),
-            gameEntity.getCurrentBalance(),
-            gameEntity.getCurrentHand()
+            gameEntity.getBet(),
+            gameEntity.getCredits(),
+            gameEntity.getHand()
                 .stream()
                 .map(card -> new CardDto(card.getSuit(), card.getRank()))
                 .collect(toList()),
-            new PokerHand(gameEntity.getCurrentHand()).calculateBestHand(),
+            new PokerHand(gameEntity.getHand()).calculateBestHand(),
             gameEntity.getGameState()
         );
     }

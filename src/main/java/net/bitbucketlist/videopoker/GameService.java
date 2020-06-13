@@ -47,26 +47,26 @@ public class GameService {
             .collect(Collectors.toList());
     }
 
-    public GameDto setCurrentBet(UUID gameId, int currentBet) {
+    public GameDto setBet(UUID gameId, int bet) {
         GameEntity gameEntity = getGameEntity(gameId);
 
         if (gameEntity.getGameState() != GameState.READY_TO_DEAL) {
             throw new InvalidGameStateException("Unable to change bet for gameId: " + gameId);
         }
 
-        if (currentBet < MINIMUM_BET || currentBet > MAXIMUM_BET) {
+        if (bet < MINIMUM_BET || bet > MAXIMUM_BET) {
             throw new InvalidGameStateException(
                 String.format("Bet must be between %s and %s. gameId: %s", MINIMUM_BET, MAXIMUM_BET, gameId)
             );
         }
 
-        if (gameEntity.getCurrentBalance() < currentBet) {
+        if (gameEntity.getCredits() < bet) {
             throw new InvalidGameStateException(
-                String.format("Not enough credits (%s requested, %s available). gameId: %s", currentBet, gameEntity.getCurrentBalance(), gameId)
+                String.format("Not enough credits (%s requested, %s available). gameId: %s", bet, gameEntity.getCredits(), gameId)
             );
         }
 
-        gameEntity.setCurrentBet(currentBet);
+        gameEntity.setBet(bet);
 
         gameRepository.save(gameEntity);
 
@@ -89,8 +89,8 @@ public class GameService {
         List<Card> cards = gameEntity.getDeck().deal(HAND_SIZE);
 
         gameEntity.setGameState(GameState.READY_TO_DRAW);
-        gameEntity.setCurrentHand(cards);
-        gameEntity.setCurrentBalance(gameEntity.getCurrentBalance() - gameEntity.getCurrentBet());
+        gameEntity.setHand(cards);
+        gameEntity.setCredits(gameEntity.getCredits() - gameEntity.getBet());
 
         gameRepository.save(gameEntity);
 
@@ -108,16 +108,16 @@ public class GameService {
             throw new InvalidGameStateException("Unable to draw for gameId: " + gameId);
         }
 
-        List<Card> currentHand = gameEntity.getCurrentHand();
+        List<Card> hand = gameEntity.getHand();
 
         for (int i = 0; i < HAND_SIZE; i++) {
             if (!holds.contains(i)) {
-                currentHand.set(i, gameEntity.getDeck().deal(1).get(0));
+                hand.set(i, gameEntity.getDeck().deal(1).get(0));
             }
         }
 
-        int payout = payoutService.calculatePayout(gameEntity.getCurrentHand(), gameEntity.getCurrentBet());
-        gameEntity.setCurrentBalance(gameEntity.getCurrentBalance() + payout);
+        int payout = payoutService.calculatePayout(gameEntity.getHand(), gameEntity.getBet());
+        gameEntity.setCredits(gameEntity.getCredits() + payout);
 
         gameEntity.setGameState(GameState.READY_TO_DEAL);
 

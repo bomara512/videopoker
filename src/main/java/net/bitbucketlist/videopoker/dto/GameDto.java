@@ -10,10 +10,10 @@ import java.util.UUID;
 @Value
 public class GameDto {
     UUID id;
-    int cardsRemainingInDeck;
-    int currentBet;
-    int currentBalance;
-    List<CardDto> currentHand;
-    PokerHandEnum bestHand;
+    int deckSize;
+    int bet;
+    int credits;
+    List<CardDto> hand;
+    PokerHandEnum handRank;
     GameState gameState;
 }

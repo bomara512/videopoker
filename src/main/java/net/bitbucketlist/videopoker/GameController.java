@@ -30,8 +30,8 @@ public class GameController {
     }
 
     @PutMapping(path = "/game/{gameId}/bet")
-    public GameDto changeBet(@PathVariable UUID gameId, @RequestParam int currentBet) {
-        return gameService.setCurrentBet(gameId, currentBet);
+    public GameDto changeBet(@PathVariable UUID gameId, @RequestParam int amount) {
+        return gameService.setBet(gameId, amount);
     }
 
     @PutMapping(path = "/game/{gameId}/deal")

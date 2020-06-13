@@ -51,13 +51,13 @@ class GameControllerIT {
         mockMvc.perform(post("/game"))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").exists())
-            .andExpect(jsonPath("$.currentBet").value(1))
-            .andExpect(jsonPath("$.currentHand").isArray())
-            .andExpect(jsonPath("$.currentHand").isEmpty())
-            .andExpect(jsonPath("$.cardsRemainingInDeck").value(52))
+            .andExpect(jsonPath("$.bet").value(1))
+            .andExpect(jsonPath("$.hand").isArray())
+            .andExpect(jsonPath("$.hand").isEmpty())
+            .andExpect(jsonPath("$.deckSize").value(52))
             .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DEAL.name()))
-            .andExpect(jsonPath("$.currentBalance").value(50))
-            .andExpect(jsonPath("$.bestHand").isEmpty());
+            .andExpect(jsonPath("$.credits").value(50))
+            .andExpect(jsonPath("$.handRank").isEmpty());
     }
 
     @Test
@@ -76,11 +76,11 @@ class GameControllerIT {
     void changeBet() throws Exception {
         GameDto game = gameService.createGame();
 
-        assertThat(game.getCurrentBet()).isEqualTo(1);
+        assertThat(game.getBet()).isEqualTo(1);
 
-        mockMvc.perform(put("/game/" + game.getId() + "/bet?currentBet=5"))
+        mockMvc.perform(put("/game/" + game.getId() + "/bet?amount=5"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.currentBet").value(5));
+            .andExpect(jsonPath("$.bet").value(5));
     }
 
     @Test
@@ -88,7 +88,7 @@ class GameControllerIT {
         GameDto game = gameService.createGame();
         gameService.deal(game.getId());
 
-        mockMvc.perform(put("/game/" + game.getId() + "/bet?currentBet=5"))
+        mockMvc.perform(put("/game/" + game.getId() + "/bet?amount=5"))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.message").value("Unable to change bet for gameId: " + game.getId()));
     }
@@ -97,7 +97,7 @@ class GameControllerIT {
     void changeBet_gameNotFound() throws Exception {
         UUID nonExistentGameId = UUID.randomUUID();
 
-        mockMvc.perform(put("/game/" + nonExistentGameId + "/bet?currentBet=5"))
+        mockMvc.perform(put("/game/" + nonExistentGameId + "/bet?amount=5"))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.message").value("Game " + nonExistentGameId + " does not exist"));
     }
@@ -105,16 +105,16 @@ class GameControllerIT {
     @Test
     void deal() throws Exception {
         GameDto game = gameService.createGame();
-        gameService.setCurrentBet(game.getId(), 5);
+        gameService.setBet(game.getId(), 5);
 
         mockMvc.perform(put("/game/" + game.getId() + "/deal"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(game.getId().toString()))
-            .andExpect(jsonPath("$.currentHand.length()").value(5))
-            .andExpect(jsonPath("$.cardsRemainingInDeck").value(47))
+            .andExpect(jsonPath("$.hand.length()").value(5))
+            .andExpect(jsonPath("$.deckSize").value(47))
             .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DRAW.name()))
-            .andExpect(jsonPath("$.currentBalance").value(45))
-            .andExpect(jsonPath("$.bestHand").isNotEmpty());
+            .andExpect(jsonPath("$.credits").value(45))
+            .andExpect(jsonPath("$.handRank").isNotEmpty());
     }
 
     @Test
@@ -139,23 +139,23 @@ class GameControllerIT {
     @Test
     void draw() throws Exception {
         GameDto game = gameService.createGame();
-        List<CardDto> originalHand = gameService.deal(game.getId()).getCurrentHand();
+        List<CardDto> originalHand = gameService.deal(game.getId()).getHand();
 
         MvcResult mvcResult = mockMvc.perform(put("/game/" + game.getId() + "/draw?holds=0,2,4"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.currentHand").isArray())
-            .andExpect(jsonPath("$.currentHand.length()").value(5))
-            .andExpect(jsonPath("$.cardsRemainingInDeck").value(45))
+            .andExpect(jsonPath("$.hand").isArray())
+            .andExpect(jsonPath("$.hand.length()").value(5))
+            .andExpect(jsonPath("$.deckSize").value(45))
             .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DEAL.name()))
-            .andExpect(jsonPath("$.bestHand").isNotEmpty())
+            .andExpect(jsonPath("$.handRank").isNotEmpty())
             .andReturn();
 
         GameDto gameDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), GameDto.class);
-        assertThat(gameDto.getCurrentHand().get(0)).isEqualTo(originalHand.get(0));
-        assertThat(gameDto.getCurrentHand().get(1)).isNotEqualTo(originalHand.get(1));
-        assertThat(gameDto.getCurrentHand().get(2)).isEqualTo(originalHand.get(2));
-        assertThat(gameDto.getCurrentHand().get(3)).isNotEqualTo(originalHand.get(3));
-        assertThat(gameDto.getCurrentHand().get(4)).isEqualTo(originalHand.get(4));
+        assertThat(gameDto.getHand().get(0)).isEqualTo(originalHand.get(0));
+        assertThat(gameDto.getHand().get(1)).isNotEqualTo(originalHand.get(1));
+        assertThat(gameDto.getHand().get(2)).isEqualTo(originalHand.get(2));
+        assertThat(gameDto.getHand().get(3)).isNotEqualTo(originalHand.get(3));
+        assertThat(gameDto.getHand().get(4)).isEqualTo(originalHand.get(4));
     }
 
     @Test

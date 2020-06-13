@@ -22,8 +22,8 @@ public class PayoutService {
         PokerHandEnum.HIGH_CARD, List.of(0, 0, 0, 0, 0)
     );
 
-    public int calculatePayout(List<Card> currentHand, Integer currentBet) {
-        PokerHandEnum bestHand = new PokerHand(currentHand).calculateBestHand();
-        return payouts.get(bestHand).get(currentBet - 1);
+    public int calculatePayout(List<Card> hand, Integer bet) {
+        PokerHandEnum handRank = new PokerHand(hand).calculateBestHand();
+        return payouts.get(handRank).get(bet - 1);
     }
 }

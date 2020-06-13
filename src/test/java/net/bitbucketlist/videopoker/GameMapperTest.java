@@ -25,7 +25,7 @@ class GameMapperTest {
 
         GameEntity gameEntity = new GameEntity(new Deck(), 1, 50);
         gameEntity.setId(gameId);
-        gameEntity.setCurrentHand(emptyList());
+        gameEntity.setHand(emptyList());
 
         GameDto actual = subject.mapToDto(gameEntity);
 
@@ -39,16 +39,16 @@ class GameMapperTest {
         UUID gameId = UUID.randomUUID();
 
         Deck deck = new Deck();
-        List<Card> currentHand = deck.deal(5);
+        List<Card> hand = deck.deal(5);
 
         GameEntity gameEntity = new GameEntity(deck, 1, 50);
         gameEntity.setId(gameId);
         gameEntity.setDeck(deck);
-        gameEntity.setCurrentHand(currentHand);
+        gameEntity.setHand(hand);
 
         GameDto actual = subject.mapToDto(gameEntity);
 
-        List<CardDto> expectedHand = currentHand
+        List<CardDto> expectedHand = hand
             .stream()
             .map(card -> new CardDto(card.getSuit(), card.getRank()))
             .collect(Collectors.toList());

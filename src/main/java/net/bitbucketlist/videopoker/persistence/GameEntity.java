@@ -22,14 +22,14 @@ public class GameEntity {
     private Deck deck;
 
     @NonNull
-    private Integer currentBet;
+    private Integer bet;
 
     @NonNull
-    private List<Card> currentHand = new ArrayList<>();
+    private List<Card> hand = new ArrayList<>();
 
     @NonNull
     private GameState gameState = GameState.READY_TO_DEAL;
 
     @NonNull
-    private Integer currentBalance;
+    private Integer credits;
 }

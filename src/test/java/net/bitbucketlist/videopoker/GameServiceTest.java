@@ -62,61 +62,61 @@ class GameServiceTest {
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(gameEntityCaptor.getValue().getDeck()).isNotEqualTo(UNSHUFFLED_DECK);
-        assertThat(gameEntityCaptor.getValue().getCurrentBet()).isEqualTo(1);
-        assertThat(gameEntityCaptor.getValue().getCurrentHand()).isEmpty();
+        assertThat(gameEntityCaptor.getValue().getBet()).isEqualTo(1);
+        assertThat(gameEntityCaptor.getValue().getHand()).isEmpty();
         assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(52);
-        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(50);
+        assertThat(gameEntityCaptor.getValue().getCredits()).isEqualTo(50);
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
     }
 
     @Test
-    void setCurrentBet() {
+    void setBet() {
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
-        subject.setCurrentBet(gameId, 5);
+        subject.setBet(gameId, 5);
 
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
-        assertThat(gameEntityCaptor.getValue().getCurrentBet()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getBet()).isEqualTo(5);
     }
 
     @Test
-    void setCurrentBet_gameNotFound() {
+    void setBet_gameNotFound() {
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> subject.setCurrentBet(gameId, 5))
+        assertThatThrownBy(() -> subject.setBet(gameId, 5))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage(String.format("Game %s does not exist", gameId));
     }
 
     @Test
-    void setCurrentBet_overMaxBet() {
+    void setBet_overMaxBet() {
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
-        subject.setCurrentBet(gameId, 5);
+        subject.setBet(gameId, 5);
 
-        assertThatThrownBy(() -> subject.setCurrentBet(gameId, 6))
+        assertThatThrownBy(() -> subject.setBet(gameId, 6))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage("Bet must be between 1 and 5. gameId: " + gameId);
     }
 
     @Test
-    void setCurrentBet_underMinBet() {
+    void setBet_underMinBet() {
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
-        subject.setCurrentBet(gameId, 1);
+        subject.setBet(gameId, 1);
 
-        assertThatThrownBy(() -> subject.setCurrentBet(gameId, -1))
+        assertThatThrownBy(() -> subject.setBet(gameId, -1))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage("Bet must be between 1 and 5. gameId: " + gameId);
     }
 
     @Test
-    void setCurrentBet_notEnoughCredits() {
-        gameEntity.setCurrentBalance(3);
+    void setBet_notEnoughCredits() {
+        gameEntity.setCredits(3);
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
 
-        assertThatThrownBy(() -> subject.setCurrentBet(gameId, 5))
+        assertThatThrownBy(() -> subject.setBet(gameId, 5))
             .isInstanceOf(InvalidGameStateException.class)
             .hasMessage(
                 String.format("Not enough credits (%s requested, %s available). gameId: %s", 5, 3, gameId)
@@ -135,8 +135,8 @@ class GameServiceTest {
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(actual).isSameAs(expected);
-        assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
-        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(49);
+        assertThat(gameEntityCaptor.getValue().getHand().size()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getCredits()).isEqualTo(49);
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DRAW);
     }
 
@@ -153,12 +153,12 @@ class GameServiceTest {
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(actual).isSameAs(expected);
-        assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getHand().size()).isEqualTo(5);
         assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(47);
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DRAW);
 
         List<Card> freshDeck = new ArrayList<>();
-        freshDeck.addAll(gameEntityCaptor.getValue().getCurrentHand());
+        freshDeck.addAll(gameEntityCaptor.getValue().getHand());
         freshDeck.addAll(gameEntityCaptor.getValue().getDeck().deal(47));
         assertThat(freshDeck).isNotEqualTo(UNSHUFFLED_DECK.deal(52));
     }
@@ -192,20 +192,20 @@ class GameServiceTest {
         originalHand.add(new Card(Suit.HEART, Rank.FIVE));
 
         gameEntity.setGameState(GameState.READY_TO_DRAW);
-        gameEntity.setCurrentHand(new ArrayList<>(originalHand));
-        gameEntity.setCurrentBalance(100);
+        gameEntity.setHand(new ArrayList<>(originalHand));
+        gameEntity.setCredits(100);
 
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
-        when(mockPayoutService.calculatePayout(gameEntity.getCurrentHand(), gameEntity.getCurrentBet())).thenReturn(200);
+        when(mockPayoutService.calculatePayout(gameEntity.getHand(), gameEntity.getBet())).thenReturn(200);
 
         subject.draw(gameId, List.of(0, 4));
 
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
-        assertThat(gameEntityCaptor.getValue().getCurrentBalance()).isEqualTo(300);
+        assertThat(gameEntityCaptor.getValue().getCredits()).isEqualTo(300);
 
-        List<Card> updatedHand = gameEntityCaptor.getValue().getCurrentHand();
+        List<Card> updatedHand = gameEntityCaptor.getValue().getHand();
 
         assertThat(updatedHand.get(0)).isEqualTo(originalHand.get(0));
         assertThat(updatedHand.get(1)).isNotEqualTo(originalHand.get(1));
@@ -217,7 +217,7 @@ class GameServiceTest {
     @Test
     void draw_notEnoughCardsLeft_throwsException() {
         gameEntity.getDeck().deal(45);
-        gameEntity.setCurrentHand(gameEntity.getDeck().deal(5));
+        gameEntity.setHand(gameEntity.getDeck().deal(5));
         gameEntity.setGameState(GameState.READY_TO_DRAW);
 
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
@@ -230,7 +230,7 @@ class GameServiceTest {
     @Test
     void draw_notEnoughCardsLeft_startsFreshDeck() {
         gameEntity.getDeck().deal(42);
-        gameEntity.setCurrentHand(gameEntity.getDeck().deal(5));
+        gameEntity.setHand(gameEntity.getDeck().deal(5));
         gameEntity.setGameState(GameState.READY_TO_DRAW);
 
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
@@ -243,12 +243,12 @@ class GameServiceTest {
         verify(mockGameRepository).save(gameEntityCaptor.capture());
 
         assertThat(actual).isSameAs(expected);
-        assertThat(gameEntityCaptor.getValue().getCurrentHand().size()).isEqualTo(5);
+        assertThat(gameEntityCaptor.getValue().getHand().size()).isEqualTo(5);
         assertThat(gameEntityCaptor.getValue().getDeck().size()).isEqualTo(52);
         assertThat(gameEntityCaptor.getValue().getGameState()).isEqualTo(GameState.READY_TO_DEAL);
 
         List<Card> freshDeck = new ArrayList<>();
-        freshDeck.addAll(gameEntityCaptor.getValue().getCurrentHand());
+        freshDeck.addAll(gameEntityCaptor.getValue().getHand());
         freshDeck.addAll(gameEntityCaptor.getValue().getDeck().deal(47));
         assertThat(freshDeck).isNotEqualTo(UNSHUFFLED_DECK.deal(52));
     }

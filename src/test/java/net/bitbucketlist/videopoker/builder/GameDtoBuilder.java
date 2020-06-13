@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public final class GameDtoBuilder {
     private UUID id;
-    private int cardsRemainingInDeck = 52;
-    private Integer currentBet = 1;
-    private Integer currentBalance = 50;
-    private List<CardDto> currentHand = new ArrayList<>();
-    private PokerHandEnum bestHand;
+    private int deckSize = 52;
+    private Integer bet = 1;
+    private Integer balance = 50;
+    private List<CardDto> hand = new ArrayList<>();
+    private PokerHandEnum handRank;
     private GameState gameState;
 
     private GameDtoBuilder() {
@@ -30,28 +30,28 @@ public final class GameDtoBuilder {
         return this;
     }
 
-    public GameDtoBuilder cardsRemainingInDeck(int cardsRemainingInDeck) {
-        this.cardsRemainingInDeck = cardsRemainingInDeck;
+    public GameDtoBuilder deckSize(int deckSize) {
+        this.deckSize = deckSize;
         return this;
     }
 
-    public GameDtoBuilder currentBet(int currentBet) {
-        this.currentBet = currentBet;
+    public GameDtoBuilder bet(int bet) {
+        this.bet = bet;
         return this;
     }
 
-    public GameDtoBuilder currentBalance(int currentBalance) {
-        this.currentBalance = currentBalance;
+    public GameDtoBuilder balance(int balance) {
+        this.balance = balance;
         return this;
     }
 
-    public GameDtoBuilder currentHand(List<CardDto> currentHand) {
-        this.currentHand = currentHand;
+    public GameDtoBuilder hand(List<CardDto> hand) {
+        this.hand = hand;
         return this;
     }
 
-    public GameDtoBuilder bestHand(PokerHandEnum bestHand) {
-        this.bestHand = bestHand;
+    public GameDtoBuilder handRank(PokerHandEnum handRank) {
+        this.handRank = handRank;
         return this;
     }
 
@@ -61,6 +61,6 @@ public final class GameDtoBuilder {
     }
 
     public GameDto build() {
-        return new GameDto(id, cardsRemainingInDeck, currentBet, currentBalance, currentHand, bestHand, gameState);
+        return new GameDto(id, deckSize, bet, balance, hand, handRank, gameState);
     }
 }
