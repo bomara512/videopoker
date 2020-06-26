@@ -141,6 +141,19 @@ class GameServiceTest {
     }
 
     @Test
+    void deal_notEnoughCredits() {
+        gameEntity.setCredits(3);
+        gameEntity.setBet(5);
+        when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));
+
+        assertThatThrownBy(() -> subject.deal(gameId))
+            .isInstanceOf(InvalidGameStateException.class)
+            .hasMessage(
+                String.format("Not enough credits (%s requested, %s available). gameId: %s", 5, 3, gameId)
+            );
+    }
+
+    @Test
     void deal_notEnoughCardsLeft_startsFreshDeck() {
         gameEntity.getDeck().deal(42);
         when(mockGameRepository.findById(gameId)).thenReturn(Optional.of(gameEntity));

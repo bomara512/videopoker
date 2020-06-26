@@ -80,6 +80,12 @@ public class GameService {
             throw new InvalidGameStateException("Unable to deal for gameId: " + gameId);
         }
 
+        if (gameEntity.getCredits() < gameEntity.getBet()) {
+            throw new InvalidGameStateException(
+                String.format("Not enough credits (%s requested, %s available). gameId: %s", gameEntity.getBet(), gameEntity.getCredits(), gameId)
+            );
+        }
+
         if (gameEntity.getDeck().size() <= HAND_SIZE * 2) {
             Deck newDeck = new Deck();
             newDeck.shuffle();
