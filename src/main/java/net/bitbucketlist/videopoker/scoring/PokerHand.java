@@ -36,6 +36,10 @@ public class PokerHand {
     }
 
     public boolean isFlush() {
+        if (isRoyalFlush()) {
+            return false;
+        }
+
         if (isRun()) {
             return false;
         }
@@ -121,10 +125,6 @@ public class PokerHand {
     }
 
     private boolean isRun() {
-        if (isRoyal()) {
-            return true;
-        }
-
         List<Integer> ordinals = getRanks()
             .stream()
             .map(Rank::ordinal)

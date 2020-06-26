@@ -213,11 +213,11 @@ class PokerHandTest {
     void isStraight_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.CLUB, Rank.EIGHT),
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SIX),
-                new Card(Suit.HEART, Rank.FIVE),
-                new Card(Suit.DIAMOND, Rank.THREE)
+                new Card(Suit.CLUB, Rank.JACK),
+                new Card(Suit.DIAMOND, Rank.QUEEN),
+                new Card(Suit.HEART, Rank.KING),
+                new Card(Suit.CLUB, Rank.ACE),
+                new Card(Suit.CLUB, Rank.THREE)
             )
         );
 
