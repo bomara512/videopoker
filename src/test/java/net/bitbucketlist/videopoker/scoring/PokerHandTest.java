@@ -103,7 +103,7 @@ class PokerHandTest {
                 new Card(Suit.HEART, Rank.KING),
                 new Card(Suit.HEART, Rank.QUEEN),
                 new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.SPADE, Rank.TEN)
+                new Card(Suit.HEART, Rank.TEN)
             )
         );
 
