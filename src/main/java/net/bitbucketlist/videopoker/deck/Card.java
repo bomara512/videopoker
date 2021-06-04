@@ -1,10 +1,15 @@
 package net.bitbucketlist.videopoker.deck;
 
+import lombok.NonNull;
 import lombok.Value;
 
 @Value
 public class Card {
+
+    @NonNull
     Suit suit;
+
+    @NonNull
     Rank rank;
 
     public String getDisplay() {
@@ -12,7 +17,7 @@ public class Card {
     }
 
     private String getRankDisplay() {
-        switch (getRank()) {
+        switch (rank) {
             case ACE:
                 return "A";
             case TWO:
@@ -40,12 +45,12 @@ public class Card {
             case KING:
                 return "K";
             default:
-                throw new IllegalStateException("Unexpected value: " + getRank());
+                throw new IllegalArgumentException("Unexpected value: " + getRank());
         }
     }
 
     private String getSuitDisplay() {
-        switch (getSuit()) {
+        switch (suit) {
             case HEART:
                 return "H";
             case CLUB:
@@ -55,7 +60,7 @@ public class Card {
             case SPADE:
                 return "S";
             default:
-                throw new IllegalStateException("Unexpected value: " + getSuit());
+                throw new IllegalArgumentException("Unexpected value: " + getSuit());
         }
     }
 }

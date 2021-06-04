@@ -22,7 +22,6 @@ class DeckTest {
                 UNSHUFFLED_DECK.add(new Card(suit, rank));
             }
         }
-
     }
 
     @Test

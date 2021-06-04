@@ -1,21 +1,21 @@
 package net.bitbucketlist.videopoker.scoring;
 
 import net.bitbucketlist.videopoker.deck.Card;
-import net.bitbucketlist.videopoker.deck.Rank;
-import net.bitbucketlist.videopoker.deck.Suit;
-import net.bitbucketlist.videopoker.util.TestPokerHands;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 
+import static net.bitbucketlist.videopoker.deck.Rank.*;
+import static net.bitbucketlist.videopoker.deck.Suit.*;
+import static net.bitbucketlist.videopoker.util.TestPokerHands.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PokerHandTest {
 
     @Test
     void isRoyalFlush() {
-        PokerHand subject = new PokerHand(TestPokerHands.ROYAL_FLUSH);
+        PokerHand subject = new PokerHand(ROYAL_FLUSH);
         assertThat(subject.isRoyalFlush()).isEqualTo(true);
     }
 
@@ -23,11 +23,11 @@ class PokerHandTest {
     void isRoyalFlush_notFlush_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.ACE),
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.HEART, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.SPADE, Rank.TEN)
+                new Card(HEART, ACE),
+                new Card(HEART, KING),
+                new Card(HEART, QUEEN),
+                new Card(HEART, JACK),
+                new Card(SPADE, TEN)
             ));
 
         assertThat(subject.isRoyalFlush()).isEqualTo(false);
@@ -37,11 +37,11 @@ class PokerHandTest {
     void isRoyalFlush_notStraight_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.ACE),
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.HEART, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.HEART, Rank.FOUR)
+                new Card(HEART, ACE),
+                new Card(HEART, KING),
+                new Card(HEART, QUEEN),
+                new Card(HEART, JACK),
+                new Card(HEART, FOUR)
             ));
 
         assertThat(subject.isRoyalFlush()).isEqualTo(false);
@@ -51,11 +51,11 @@ class PokerHandTest {
     void isRoyalFlush_notRoyal_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.HEART, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.HEART, Rank.TEN),
-                new Card(Suit.HEART, Rank.NINE)
+                new Card(HEART, KING),
+                new Card(HEART, QUEEN),
+                new Card(HEART, JACK),
+                new Card(HEART, TEN),
+                new Card(HEART, NINE)
             ));
 
         assertThat(subject.isRoyalFlush()).isEqualTo(false);
@@ -63,7 +63,7 @@ class PokerHandTest {
 
     @Test
     void isStraightFlush() {
-        PokerHand subject = new PokerHand(TestPokerHands.STRAIGHT_FLUSH);
+        PokerHand subject = new PokerHand(STRAIGHT_FLUSH);
         assertThat(subject.isStraightFlush()).isEqualTo(true);
     }
 
@@ -71,11 +71,11 @@ class PokerHandTest {
     void isStraightFlush_notStraight_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.EIGHT),
-                new Card(Suit.HEART, Rank.FIVE),
-                new Card(Suit.HEART, Rank.FOUR),
-                new Card(Suit.HEART, Rank.THREE),
-                new Card(Suit.HEART, Rank.TWO)
+                new Card(HEART, EIGHT),
+                new Card(HEART, FIVE),
+                new Card(HEART, FOUR),
+                new Card(HEART, THREE),
+                new Card(HEART, TWO)
             ));
 
         assertThat(subject.isStraightFlush()).isEqualTo(false);
@@ -85,11 +85,11 @@ class PokerHandTest {
     void isStraightFlush_notFlush_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.SIX),
-                new Card(Suit.HEART, Rank.FIVE),
-                new Card(Suit.HEART, Rank.FOUR),
-                new Card(Suit.HEART, Rank.THREE),
-                new Card(Suit.SPADE, Rank.TWO)
+                new Card(HEART, SIX),
+                new Card(HEART, FIVE),
+                new Card(HEART, FOUR),
+                new Card(HEART, THREE),
+                new Card(SPADE, TWO)
             ));
 
         assertThat(subject.isStraightFlush()).isEqualTo(false);
@@ -97,22 +97,13 @@ class PokerHandTest {
 
     @Test
     void isStraightFlush_royalFlush_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.ACE),
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.HEART, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.HEART, Rank.TEN)
-            )
-        );
-
+        PokerHand subject = new PokerHand(ROYAL_FLUSH);
         assertThat(subject.isStraightFlush()).isEqualTo(false);
     }
 
     @Test
     void isFourOfAKind() {
-        PokerHand subject = new PokerHand(TestPokerHands.FOUR_OF_A_KIND);
+        PokerHand subject = new PokerHand(FOUR_OF_A_KIND);
         assertThat(subject.isFourOfAKind()).isEqualTo(true);
     }
 
@@ -120,11 +111,11 @@ class PokerHandTest {
     void isFourOfAKind_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.SIX),
-                new Card(Suit.SPADE, Rank.SIX)
+                new Card(HEART, SEVEN),
+                new Card(CLUB, SEVEN),
+                new Card(SPADE, SEVEN),
+                new Card(DIAMOND, SIX),
+                new Card(SPADE, SIX)
             )
         );
 
@@ -133,7 +124,7 @@ class PokerHandTest {
 
     @Test
     void isFullHouse() {
-        PokerHand subject = new PokerHand(TestPokerHands.FULL_HOUSE);
+        PokerHand subject = new PokerHand(FULL_HOUSE);
         assertThat(subject.isFullHouse()).isEqualTo(true);
     }
 
@@ -141,11 +132,11 @@ class PokerHandTest {
     void isFullHouse_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.SIX),
-                new Card(Suit.SPADE, Rank.FIVE)
+                new Card(HEART, SEVEN),
+                new Card(CLUB, SEVEN),
+                new Card(SPADE, SEVEN),
+                new Card(DIAMOND, SIX),
+                new Card(SPADE, FIVE)
             )
         );
 
@@ -154,7 +145,7 @@ class PokerHandTest {
 
     @Test
     void isFlush() {
-        PokerHand subject = new PokerHand(TestPokerHands.FLUSH);
+        PokerHand subject = new PokerHand(FLUSH);
         assertThat(subject.isFlush()).isEqualTo(true);
     }
 
@@ -162,11 +153,11 @@ class PokerHandTest {
     void isFlush_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.NINE),
-                new Card(Suit.HEART, Rank.SIX),
-                new Card(Suit.SPADE, Rank.FIVE),
-                new Card(Suit.HEART, Rank.THREE),
-                new Card(Suit.HEART, Rank.ACE)
+                new Card(HEART, NINE),
+                new Card(HEART, SIX),
+                new Card(SPADE, FIVE),
+                new Card(HEART, THREE),
+                new Card(HEART, ACE)
             )
         );
 
@@ -175,37 +166,19 @@ class PokerHandTest {
 
     @Test
     void isFlush_royalFlush_returnFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.ACE),
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.HEART, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.HEART, Rank.TEN)
-            )
-        );
-
+        PokerHand subject = new PokerHand(ROYAL_FLUSH);
         assertThat(subject.isFlush()).isEqualTo(false);
     }
 
     @Test
     void isFlush_straightFlush_returnFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.SIX),
-                new Card(Suit.HEART, Rank.FIVE),
-                new Card(Suit.HEART, Rank.FOUR),
-                new Card(Suit.HEART, Rank.THREE),
-                new Card(Suit.HEART, Rank.TWO)
-            )
-        );
-
+        PokerHand subject = new PokerHand(STRAIGHT_FLUSH);
         assertThat(subject.isFlush()).isEqualTo(false);
     }
 
     @Test
     void isStraight() {
-        PokerHand subject = new PokerHand(TestPokerHands.STRAIGHT);
+        PokerHand subject = new PokerHand(STRAIGHT);
         assertThat(subject.isStraight()).isEqualTo(true);
     }
 
@@ -213,11 +186,11 @@ class PokerHandTest {
     void isStraight_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.CLUB, Rank.JACK),
-                new Card(Suit.DIAMOND, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.KING),
-                new Card(Suit.CLUB, Rank.ACE),
-                new Card(Suit.CLUB, Rank.THREE)
+                new Card(CLUB, JACK),
+                new Card(DIAMOND, QUEEN),
+                new Card(HEART, KING),
+                new Card(CLUB, ACE),
+                new Card(CLUB, THREE)
             )
         );
 
@@ -226,16 +199,7 @@ class PokerHandTest {
 
     @Test
     void isStraight_straightFlush_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.EIGHT),
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.HEART, Rank.SIX),
-                new Card(Suit.HEART, Rank.FIVE),
-                new Card(Suit.HEART, Rank.FOUR)
-            )
-        );
-
+        PokerHand subject = new PokerHand(STRAIGHT_FLUSH);
         assertThat(subject.isStraight()).isEqualTo(false);
     }
 
@@ -243,11 +207,11 @@ class PokerHandTest {
     void isStraight_containsPair_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.SPADE, Rank.QUEEN),
-                new Card(Suit.DIAMOND, Rank.QUEEN),
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.SPADE, Rank.NINE),
-                new Card(Suit.DIAMOND, Rank.EIGHT)
+                new Card(SPADE, QUEEN),
+                new Card(DIAMOND, QUEEN),
+                new Card(HEART, JACK),
+                new Card(SPADE, NINE),
+                new Card(DIAMOND, EIGHT)
             )
         );
 
@@ -256,7 +220,7 @@ class PokerHandTest {
 
     @Test
     void isThreeOfAKind() {
-        PokerHand subject = new PokerHand(TestPokerHands.THREE_OF_A_KIND);
+        PokerHand subject = new PokerHand(THREE_OF_A_KIND);
         assertThat(subject.isThreeOfAKind()).isEqualTo(true);
     }
 
@@ -264,11 +228,11 @@ class PokerHandTest {
     void isThreeOfAKind_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.FIVE),
-                new Card(Suit.DIAMOND, Rank.EIGHT),
-                new Card(Suit.SPADE, Rank.SIX)
+                new Card(HEART, SEVEN),
+                new Card(CLUB, SEVEN),
+                new Card(SPADE, FIVE),
+                new Card(DIAMOND, EIGHT),
+                new Card(SPADE, SIX)
             )
         );
 
@@ -277,37 +241,19 @@ class PokerHandTest {
 
     @Test
     void isThreeOfAKind_fourOfAKind_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FOUR_OF_A_KIND);
         assertThat(subject.isThreeOfAKind()).isEqualTo(false);
     }
 
     @Test
     void isThreeOfAKind_fullHouse_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.FIVE),
-                new Card(Suit.SPADE, Rank.FIVE)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FULL_HOUSE);
         assertThat(subject.isThreeOfAKind()).isEqualTo(false);
     }
 
     @Test
     void isTwoPair() {
-        PokerHand subject = new PokerHand(TestPokerHands.TWO_PAIR);
+        PokerHand subject = new PokerHand(TWO_PAIR);
         assertThat(subject.isTwoPair()).isEqualTo(true);
     }
 
@@ -315,11 +261,11 @@ class PokerHandTest {
     void isTwoPair_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.FOUR),
-                new Card(Suit.DIAMOND, Rank.TWO),
-                new Card(Suit.SPADE, Rank.SIX)
+                new Card(HEART, SEVEN),
+                new Card(CLUB, SEVEN),
+                new Card(SPADE, FOUR),
+                new Card(DIAMOND, TWO),
+                new Card(SPADE, SIX)
             )
         );
 
@@ -328,37 +274,19 @@ class PokerHandTest {
 
     @Test
     void isTwoPair_fourOfAKind_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FOUR_OF_A_KIND);
         assertThat(subject.isTwoPair()).isEqualTo(false);
     }
 
     @Test
     void isTwoPair_fullHouse_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.SEVEN),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.SEVEN),
-                new Card(Suit.DIAMOND, Rank.SIX),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FULL_HOUSE);
         assertThat(subject.isTwoPair()).isEqualTo(false);
     }
 
     @Test
     void isJacksOrBetter() {
-        PokerHand subject = new PokerHand(TestPokerHands.JACKS_OR_BETTER);
+        PokerHand subject = new PokerHand(JACKS_OR_BETTER);
         assertThat(subject.isJacksOrBetter()).isEqualTo(true);
     }
 
@@ -366,11 +294,11 @@ class PokerHandTest {
     void isJacksOrBetter_returnsFalse() {
         PokerHand subject = new PokerHand(
             List.of(
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.CLUB, Rank.SEVEN),
-                new Card(Suit.SPADE, Rank.FOUR),
-                new Card(Suit.DIAMOND, Rank.TWO),
-                new Card(Suit.SPADE, Rank.SIX)
+                new Card(HEART, JACK),
+                new Card(CLUB, SEVEN),
+                new Card(SPADE, FOUR),
+                new Card(DIAMOND, TWO),
+                new Card(SPADE, SIX)
             )
         );
 
@@ -379,82 +307,46 @@ class PokerHandTest {
 
     @Test
     void isJacksOrBetter_threeOfAKind_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.CLUB, Rank.JACK),
-                new Card(Suit.SPADE, Rank.JACK),
-                new Card(Suit.DIAMOND, Rank.FOUR),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(THREE_OF_A_KIND);
         assertThat(subject.isJacksOrBetter()).isEqualTo(false);
     }
 
     @Test
     void isJacksOrBetter_fourOfAKind_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.CLUB, Rank.JACK),
-                new Card(Suit.SPADE, Rank.JACK),
-                new Card(Suit.DIAMOND, Rank.JACK),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FOUR_OF_A_KIND);
         assertThat(subject.isJacksOrBetter()).isEqualTo(false);
     }
 
     @Test
     void isJacksOrBetter_fullHouse_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.CLUB, Rank.JACK),
-                new Card(Suit.SPADE, Rank.JACK),
-                new Card(Suit.DIAMOND, Rank.QUEEN),
-                new Card(Suit.SPADE, Rank.QUEEN)
-            )
-        );
-
+        PokerHand subject = new PokerHand(FULL_HOUSE);
         assertThat(subject.isJacksOrBetter()).isEqualTo(false);
     }
 
     @Test
     void isJacksOrBetter_twoPair_returnsFalse() {
-        PokerHand subject = new PokerHand(
-            List.of(
-                new Card(Suit.HEART, Rank.JACK),
-                new Card(Suit.CLUB, Rank.JACK),
-                new Card(Suit.SPADE, Rank.QUEEN),
-                new Card(Suit.DIAMOND, Rank.QUEEN),
-                new Card(Suit.SPADE, Rank.SIX)
-            )
-        );
-
+        PokerHand subject = new PokerHand(TWO_PAIR);
         assertThat(subject.isJacksOrBetter()).isEqualTo(false);
     }
 
     @Test
     void calculateBestHand() {
         assertThat(new PokerHand(Collections.emptyList()).calculateBestHand()).isEqualTo(null);
-        assertThat(new PokerHand(TestPokerHands.ROYAL_FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.ROYAL_FLUSH);
-        assertThat(new PokerHand(TestPokerHands.STRAIGHT_FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.STRAIGHT_FLUSH);
-        assertThat(new PokerHand(TestPokerHands.FOUR_OF_A_KIND).calculateBestHand()).isEqualTo(PokerHandEnum.FOUR_OF_A_KIND);
-        assertThat(new PokerHand(TestPokerHands.FULL_HOUSE).calculateBestHand()).isEqualTo(PokerHandEnum.FULL_HOUSE);
-        assertThat(new PokerHand(TestPokerHands.FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.FLUSH);
-        assertThat(new PokerHand(TestPokerHands.STRAIGHT).calculateBestHand()).isEqualTo(PokerHandEnum.STRAIGHT);
-        assertThat(new PokerHand(TestPokerHands.THREE_OF_A_KIND).calculateBestHand()).isEqualTo(PokerHandEnum.THREE_OF_A_KIND);
-        assertThat(new PokerHand(TestPokerHands.TWO_PAIR).calculateBestHand()).isEqualTo(PokerHandEnum.TWO_PAIR);
-        assertThat(new PokerHand(TestPokerHands.JACKS_OR_BETTER).calculateBestHand()).isEqualTo(PokerHandEnum.JACKS_OR_BETTER);
+        assertThat(new PokerHand(ROYAL_FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.ROYAL_FLUSH);
+        assertThat(new PokerHand(STRAIGHT_FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.STRAIGHT_FLUSH);
+        assertThat(new PokerHand(FOUR_OF_A_KIND).calculateBestHand()).isEqualTo(PokerHandEnum.FOUR_OF_A_KIND);
+        assertThat(new PokerHand(FULL_HOUSE).calculateBestHand()).isEqualTo(PokerHandEnum.FULL_HOUSE);
+        assertThat(new PokerHand(FLUSH).calculateBestHand()).isEqualTo(PokerHandEnum.FLUSH);
+        assertThat(new PokerHand(STRAIGHT).calculateBestHand()).isEqualTo(PokerHandEnum.STRAIGHT);
+        assertThat(new PokerHand(THREE_OF_A_KIND).calculateBestHand()).isEqualTo(PokerHandEnum.THREE_OF_A_KIND);
+        assertThat(new PokerHand(TWO_PAIR).calculateBestHand()).isEqualTo(PokerHandEnum.TWO_PAIR);
+        assertThat(new PokerHand(JACKS_OR_BETTER).calculateBestHand()).isEqualTo(PokerHandEnum.JACKS_OR_BETTER);
         assertThat(new PokerHand(List.of(
-            new Card(Suit.HEART, Rank.TEN),
-            new Card(Suit.CLUB, Rank.TEN),
-            new Card(Suit.SPADE, Rank.SEVEN),
-            new Card(Suit.DIAMOND, Rank.THREE),
-            new Card(Suit.SPADE, Rank.TWO)
+            new Card(HEART, TEN),
+            new Card(CLUB, TEN),
+            new Card(SPADE, SEVEN),
+            new Card(DIAMOND, THREE),
+            new Card(SPADE, TWO)
         )).calculateBestHand()).isEqualTo(PokerHandEnum.HIGH_CARD);
 
     }
