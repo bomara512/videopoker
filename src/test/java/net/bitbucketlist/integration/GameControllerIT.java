@@ -1,5 +1,6 @@
 package net.bitbucketlist.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bitbucketlist.videopoker.GameService;
 import net.bitbucketlist.videopoker.GameState;
@@ -7,7 +8,9 @@ import net.bitbucketlist.videopoker.TestRedisConfiguration;
 import net.bitbucketlist.videopoker.VideoPokerApplication;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
+import net.bitbucketlist.videopoker.dto.PayoutsDto;
 import net.bitbucketlist.videopoker.persistence.GameRepository;
+import net.bitbucketlist.videopoker.scoring.PokerHandEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,5 +179,29 @@ class GameControllerIT {
         mockMvc.perform(put("/game/" + nonExistentGameId + "/deal"))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.message").value("Game " + nonExistentGameId + " does not exist"));
+    }
+
+    @Test
+    void payoutSchedule() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/game/payout-schedule"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        TypeReference<List<PayoutsDto>> mapType = new TypeReference<>() {
+        };
+        List<PayoutsDto> payoutSchedule = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), mapType);
+        assertThat(payoutSchedule).isEqualTo(
+            List.of(
+                new PayoutsDto(PokerHandEnum.ROYAL_FLUSH, List.of(250, 500, 750, 1000, 4000)),
+                new PayoutsDto(PokerHandEnum.STRAIGHT_FLUSH, List.of(50, 100, 150, 200, 250)),
+                new PayoutsDto(PokerHandEnum.FOUR_OF_A_KIND, List.of(25, 50, 75, 100, 125)),
+                new PayoutsDto(PokerHandEnum.FULL_HOUSE, List.of(9, 18, 27, 36, 45)),
+                new PayoutsDto(PokerHandEnum.FLUSH, List.of(6, 12, 18, 24, 30)),
+                new PayoutsDto(PokerHandEnum.STRAIGHT, List.of(4, 8, 12, 16, 20)),
+                new PayoutsDto(PokerHandEnum.THREE_OF_A_KIND, List.of(3, 6, 9, 12, 15)),
+                new PayoutsDto(PokerHandEnum.TWO_PAIR, List.of(2, 4, 6, 8, 10)),
+                new PayoutsDto(PokerHandEnum.JACKS_OR_BETTER, List.of(1, 2, 3, 4, 5))
+            )
+        );
     }
 }

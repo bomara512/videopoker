@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import net.bitbucketlist.videopoker.dto.GameDto;
+import net.bitbucketlist.videopoker.dto.PayoutsDto;
+import net.bitbucketlist.videopoker.scoring.PayoutService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @CrossOrigin
 public class GameController {
     GameService gameService;
+    PayoutService payoutService;
 
     @PostMapping(path = "/game")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -45,13 +48,18 @@ public class GameController {
         return gameService.draw(gameId, holds);
     }
 
+    @GetMapping(path = "/game/payout-schedule")
+    public List<PayoutsDto> payoutSchedule() {
+        return payoutService.getPayoutSchedule();
+    }
+
     @ExceptionHandler({InvalidGameStateException.class})
     public ResponseEntity<GameErrorResponse> handleException(InvalidGameStateException e) {
         return new ResponseEntity<>(new GameErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @Value
-    private class GameErrorResponse {
+    private static class GameErrorResponse {
         String message;
     }
 }
