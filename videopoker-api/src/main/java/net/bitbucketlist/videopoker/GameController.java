@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GameController {
     GameService gameService;
     PayoutService payoutService;

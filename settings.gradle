@@ -1,2 +1,2 @@
 rootProject.name = 'videopoker'
-include 'videopoker-api'
+include 'videopoker-api', 'videopoker-ui'

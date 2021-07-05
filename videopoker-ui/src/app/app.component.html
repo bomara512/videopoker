@@ -1,0 +1,43 @@
+<div class="game" *ngIf="game">
+  <h1>Total Credits: {{game.credits}}</h1>
+  <h2>Bet: {{game.bet}}</h2>
+  <div class="payout">
+    <table>
+      <tr *ngFor="let p of payoutSchedule">
+        <td>{{p.hand}}</td>
+        <td>{{p.payouts[0]}}</td>
+        <td>{{p.payouts[1]}}</td>
+        <td>{{p.payouts[2]}}</td>
+        <td>{{p.payouts[3]}}</td>
+        <td>{{p.payouts[4]}}</td>
+      </tr>
+    </table>
+  </div>
+  <div class="hand">
+    <table>
+      <tr *ngIf="game.hand.length === 0">
+        <td>CARD_BACK</td>
+        <td>CARD_BACK</td>
+        <td>CARD_BACK</td>
+        <td>CARD_BACK</td>
+        <td>CARD_BACK</td>
+      </tr>
+      <tr *ngIf="game.hand.length > 0">
+        <td *ngFor="let c of game.hand; let i = index;">{{c.suit}} {{c.rank}}
+          <input type="button" class="holdButton" *ngIf="game.gameState === 'READY_TO_DRAW'" (click)="toggleHold(i)" value="Hold"/>
+        </td>
+      </tr>
+    </table>
+    <div class="deal" *ngIf="game.gameState === 'READY_TO_DEAL'">
+      <button class="dealButton" (click)="deal()">Deal</button>
+      <button class="betOneButton" (click)="betOne()">Bet 1</button>
+      <button class="betMaxButton" (click)="betMax()">Bet Max</button>
+    </div>
+    <div class="draw" *ngIf="game.gameState === 'READY_TO_DRAW'">
+      <button class="drawButton" (click)="draw()">Draw</button>
+    </div>
+    <div *ngIf="game.gameState === 'READY_TO_DEAL'" class="bestHand">{{game.handRank}}</div>
+  </div>
+</div>
+
+
