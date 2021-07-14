@@ -13,7 +13,7 @@ export class Game {
   gameState!: string;
 }
 
-export class Payouts {
+export class Payout {
   hand!: string;
   payouts!: number[];
 }

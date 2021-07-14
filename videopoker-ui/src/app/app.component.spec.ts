@@ -2,7 +2,7 @@ import {AppComponent} from './app.component';
 import {TestBed} from '@angular/core/testing';
 import {GameService} from "./game.service";
 import {of} from "rxjs";
-import {Game, Payouts} from "./game";
+import {Game} from "./game";
 
 describe('AppComponent', () => {
   const mockGameService = jasmine.createSpyObj(['createGame', 'getPayoutSchedule', 'deal', 'draw', 'bet']);
@@ -15,13 +15,10 @@ describe('AppComponent', () => {
     bet: 3,
     handRank: "testHandRank"
   };
-  const payoutSchedule: Payouts[] = [{hand: "testHand", payouts: [1, 2, 3]}];
   let fixture: any;
   let component: any;
 
   beforeEach(async () => {
-    mockGameService.getPayoutSchedule.and.returnValue(of(payoutSchedule));
-    mockGameService.createGame.and.returnValue(of(game));
     mockGameService.deal.and.returnValue(of(game));
     mockGameService.draw.and.returnValue(of(game));
     mockGameService.bet.and.returnValue(of(game));
@@ -35,27 +32,24 @@ describe('AppComponent', () => {
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.debugElement.componentInstance;
+    component.gameService.game = game;
   });
 
   it('should initialize game', () => {
     fixture.detectChanges();
 
-    expect(component.payoutSchedule).toEqual(payoutSchedule);
-    expect(component.game).toEqual(game);
+    expect(mockGameService.getPayoutSchedule).toHaveBeenCalled();
+    expect(mockGameService.createGame).toHaveBeenCalled();
   })
 
   describe('Deal', () => {
     it('should call game service when deal button clicked', () => {
-      component.game = game;
       component.deal();
 
-      fixture.detectChanges();
-
-      expect(mockGameService.deal).toHaveBeenCalledWith('123');
+      expect(mockGameService.deal).toHaveBeenCalled();
     });
 
     it('should toggle holds when selected', () => {
-      component.game = game;
       component.holds = [];
 
       component.toggleHold(0);
@@ -71,32 +65,29 @@ describe('AppComponent', () => {
 
     describe('betOne', () => {
       it('should increase current bet by 1', () => {
-        component.game = game;
-        component.game.bet = 1;
+        component.gameService.game.bet = 1;
 
         component.betOne();
 
-        expect(mockGameService.bet).toHaveBeenCalledWith('123', 2);
+        expect(mockGameService.bet).toHaveBeenCalledWith(2);
       });
 
       it('should rollover to minimum bet if current bet is already maximum', () => {
-        component.game = game;
-        component.game.bet = 5;
+        component.gameService.game.bet = 5;
 
         component.betOne();
 
-        expect(mockGameService.bet).toHaveBeenCalledWith('123', 1);
+        expect(mockGameService.bet).toHaveBeenCalledWith(1);
       });
     });
 
     describe('betMax', () => {
       it('should increase current bet to maximum', () => {
-        component.game = game;
-        component.game.bet = 1;
+        component.gameService.game.bet = 1;
 
         component.betMax();
 
-        expect(mockGameService.bet).toHaveBeenCalledWith('123', 5);
+        expect(mockGameService.bet).toHaveBeenCalledWith(5);
       });
     });
   });
@@ -105,22 +96,92 @@ describe('AppComponent', () => {
     const holds: number[] = [0, 2, 4];
 
     beforeEach(() => {
-      component.game = game;
       component.holds = holds;
     });
 
     it('should call game service "draw" when draw button clicked', () => {
       component.draw();
-      fixture.detectChanges();
 
-      expect(mockGameService.draw).toHaveBeenCalledWith(game.id, holds);
+      expect(mockGameService.draw).toHaveBeenCalledWith(holds);
     });
 
     it('should reset holds', () => {
       component.draw();
-      fixture.detectChanges();
 
       expect(component.holds).toEqual([]);
     })
   });
+
+  describe('Game State', () => {
+    it('should identify if the game is initialized', () => {
+      component.gameService.game = null;
+
+      expect(component.isGameInitialized()).toBeFalsy();
+
+      component.gameService.game = game;
+
+      expect(component.isGameInitialized()).toBeTruthy();
+    });
+
+    it('should return the current credits', () => {
+      component.gameService.game.credits = 25;
+
+      expect(component.getCredits()).toEqual(25);
+    });
+
+    it('should return the current bet', () => {
+      component.gameService.game.bet = 3;
+
+      expect(component.getBet()).toEqual(3);
+    });
+
+    it('should return the current hand', () => {
+      component.gameService.game.hand = [{suit: "CLUB", rank: "FOUR"}];
+
+      expect(component.getHand()).toEqual([{suit: "CLUB", rank: "FOUR"}]);
+    });
+
+    it('should return the hand rank', () => {
+      component.gameService.game.handRank = 'FULL_HOUSE';
+
+      expect(component.getHandRank()).toEqual('FULL_HOUSE');
+    });
+
+    it('should identify if the game is new', () => {
+      component.gameService.game.hand = [];
+
+      expect(component.isNewGame()).toBeTrue();
+
+      component.gameService.game.hand = [{suit: "CLUB", rank: "FOUR"}];
+
+      expect(component.isNewGame()).toBeFalse();
+    });
+
+    it('should identify if ready to draw', () => {
+      component.gameService.game.gameState = 'READY_TO_DRAW';
+
+      expect(component.isReadyToDraw()).toBeTrue();
+
+      component.gameService.game.gameState = 'READY_TO_DEAL';
+
+      expect(component.isReadyToDraw()).toBeFalse();
+    });
+
+    it('should identify if ready to deal', () => {
+      component.gameService.game.gameState = 'READY_TO_DEAL';
+
+      expect(component.isReadyToDeal()).toBeTrue();
+
+      component.gameService.game.gameState = 'READY_TO_DRAW';
+
+      expect(component.isReadyToDeal()).toBeFalse();
+    });
+  });
+
+  //
+  // getHandRank() {
+  //
+  // }
+
+
 });

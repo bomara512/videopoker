@@ -1,17 +1,16 @@
 import {TestBed} from '@angular/core/testing';
 
 import {GameService} from './game.service';
-import {Payouts} from "./game";
+import {Game, Payout} from "./game";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {HttpClient} from "@angular/common/http";
+
+const game: Game = {bet: 0, credits: 0, deckSize: 0, gameState: "", hand: [], handRank: "", id: "123"};
 
 describe('GameService', () => {
   let service: GameService;
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
-
-  const game: any = {};
-  const gameId: string = '123';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -21,62 +20,55 @@ describe('GameService', () => {
     service = TestBed.inject(GameService);
     httpMock = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
+    service.game = game;
   });
 
   it('should call backend service to retrieve payout schedule', async () => {
-    const payoutSchedule: Payouts[] = [];
+    const payoutSchedule: Payout[] = [];
 
-    service.getPayoutSchedule().subscribe((data) => {
-      expect(data).toEqual(payoutSchedule);
-    });
+    service.getPayoutSchedule();
 
     const req = httpMock.expectOne('http://localhost:8080/game/payout-schedule');
-
-    expect(req.request.method).toEqual('GET');
-
     req.flush(payoutSchedule);
 
-    httpMock.verify();
-  });
-
-  it('should call backend service to deal new hand', async () => {
-    service.deal(gameId).subscribe((data) => {
-      expect(data).toEqual(game);
-    });
-
-    const req = httpMock.expectOne('http://localhost:8080/game/' + gameId + "/deal");
-
-    expect(req.request.method).toEqual('PUT');
-
-    req.flush(game);
+    expect(req.request.method).toEqual('GET');
+    expect(service.payoutSchedule).toEqual(payoutSchedule);
 
     httpMock.verify();
   });
 
-  it('should call backend service to draw new cards', async () => {
-    service.draw(gameId, [1, 2, 3]).subscribe((data) => {
-      expect(data).toEqual(game);
-    });
+  it('should call backend service to deal new hand', () => {
+    service.deal()
 
-    const req = httpMock.expectOne('http://localhost:8080/game/' + gameId + "/draw?holds=1,2,3");
+    const req = httpMock.expectOne('http://localhost:8080/game/123/deal');
+    req.flush(game);
 
     expect(req.request.method).toEqual('PUT');
-
-    req.flush(game);
+    expect(service.game).toEqual(game);
 
     httpMock.verify();
   });
 
-  it('should call backend service to set current bet', async () => {
-    await service.bet(gameId, 3).subscribe((data) => {
-      expect(data).toEqual(game);
-    });
+  it('should call backend service to draw new cards', () => {
+    service.draw([1, 2, 3]);
 
-    const req = httpMock.expectOne('http://localhost:8080/game/' + gameId + "/bet?amount=3");
+    const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,2,3');
+    req.flush(game);
 
     expect(req.request.method).toEqual('PUT');
+    expect(service.game).toEqual(game);
 
+    httpMock.verify();
+  });
+
+  it('should call backend service to set current bet', () => {
+    service.bet(3)
+
+    const req = httpMock.expectOne('http://localhost:8080/game/123/bet?amount=3');
     req.flush(game);
+
+    expect(req.request.method).toEqual('PUT');
+    expect(service.game).toEqual(game);
 
     httpMock.verify();
   });

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {Game, Payout} from "./game";
 
 @Injectable({
   providedIn: 'root'
@@ -8,26 +9,44 @@ export class GameService {
 
   private REST_API_SERVER = 'http://localhost:8080';
 
+  game!: Game;
+  payoutSchedule!: Payout[];
+
   constructor(private httpClient: HttpClient) {
   }
 
   public createGame() {
-    return this.httpClient.post(this.REST_API_SERVER + '/game', null);
+    this.httpClient.post(this.REST_API_SERVER + '/game', null)
+      .subscribe((data: any) => {
+        this.game = data;
+      });
   }
 
   public getPayoutSchedule() {
-    return this.httpClient.get(this.REST_API_SERVER + '/game/payout-schedule');
+    this.httpClient.get(this.REST_API_SERVER + '/game/payout-schedule')
+      .subscribe((data: any) => {
+        this.payoutSchedule = data;
+      });
   }
 
-  public deal(gameId: string) {
-    return this.httpClient.put(this.REST_API_SERVER + '/game/' + gameId + '/deal', null);
+  public deal() {
+    this.httpClient.put(this.REST_API_SERVER + '/game/' + this.game.id + '/deal', null)
+      .subscribe((data: any) => {
+        this.game = data;
+      });
   }
 
-  public draw(gameId: string, holds: number[]) {
-    return this.httpClient.put(this.REST_API_SERVER + '/game/' + gameId + '/draw?holds=' + holds, null);
+  public draw(holds: number[]) {
+    this.httpClient.put(this.REST_API_SERVER + '/game/' + this.game.id + '/draw?holds=' + holds, null)
+      .subscribe((data: any) => {
+        this.game = data;
+      });
   }
 
-  public bet(gameId: string, amount: number) {
-    return this.httpClient.put(this.REST_API_SERVER + '/game/' + gameId + '/bet?amount=' + amount, null);
+  public bet(amount: number) {
+    this.httpClient.put(this.REST_API_SERVER + '/game/' + this.game.id + '/bet?amount=' + amount, null)
+      .subscribe((data: any) => {
+        this.game = data;
+      });
   }
 }

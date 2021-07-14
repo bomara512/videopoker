@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Game, Payouts} from "./game";
 import {GameService} from "./game.service";
 
 @Component({
@@ -9,8 +8,6 @@ import {GameService} from "./game.service";
 })
 export class AppComponent implements OnInit {
   title = 'videopoker-ui';
-  game!: Game;
-  payoutSchedule!: Payouts[];
   gameService: GameService;
   holds: number[] = [];
 
@@ -18,27 +15,30 @@ export class AppComponent implements OnInit {
     this.gameService = gameService;
   }
 
-  ngOnInit(): void {
-    this.gameService.createGame().subscribe((data: any) => {
-      this.game = data;
-    });
+  private getGame() {
+    return this.gameService.game;
+  }
 
-    this.gameService.getPayoutSchedule().subscribe((data: any) => {
-      this.payoutSchedule = data;
-    });
+  ngOnInit(): void {
+    this.gameService.createGame();
+    this.gameService.getPayoutSchedule()
+  }
+
+  isGameInitialized() {
+    return this.getGame();
+  }
+
+  isNewGame() {
+    return this.getGame().hand.length == 0;
   }
 
   deal(): void {
-    this.gameService.deal(this.game.id).subscribe((data: any) => {
-      this.game = data;
-    });
+    this.gameService.deal();
   }
 
   draw() {
-    this.gameService.draw(this.game.id, this.holds).subscribe((data: any) => {
-      this.game = data;
-      this.holds = [];
-    });
+    this.gameService.draw(this.holds);
+    this.holds = [];
   }
 
   toggleHold(index: number) {
@@ -52,22 +52,44 @@ export class AppComponent implements OnInit {
 
   betOne() {
     let bet: number;
-    if (this.game.bet === 5) {
+    if (this.getGame().bet === 5) {
       bet = 1;
     } else {
-      bet = this.game.bet + 1;
+      bet = this.getGame().bet + 1;
     }
-
-    this.gameService.bet(this.game.id, bet).subscribe((data: any) => {
-      this.game = data;
-    });
+    this.gameService.bet(bet)
   }
 
   betMax() {
     let bet: number = 5;
+    this.gameService.bet(bet)
+  }
 
-    this.gameService.bet(this.game.id, bet).subscribe((data: any) => {
-      this.game = data;
-    });
+  isReadyToDraw() {
+    return this.getGame().gameState == 'READY_TO_DRAW';
+  }
+
+  isReadyToDeal() {
+    return this.getGame().gameState == 'READY_TO_DEAL';
+  }
+
+  getCredits() {
+    return this.getGame().credits;
+  }
+
+  getBet() {
+    return this.getGame().bet;
+  }
+
+  getHand() {
+    return this.getGame().hand;
+  }
+
+  getHandRank() {
+    return this.getGame().handRank;
+  }
+
+  getPayoutSchedule() {
+    return this.gameService.payoutSchedule;
   }
 }
