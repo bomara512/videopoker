@@ -9,7 +9,6 @@ import {GameService} from "./game.service";
 export class AppComponent implements OnInit {
   title = 'videopoker-ui';
   gameService: GameService;
-  holds: number[] = [];
 
   constructor(gameService: GameService) {
     this.gameService = gameService;
@@ -28,26 +27,16 @@ export class AppComponent implements OnInit {
     return this.getGame();
   }
 
-  isNewGame() {
-    return this.getGame().hand.length == 0;
+  getPayoutSchedule() {
+    return this.gameService.payoutSchedule;
   }
 
-  deal(): void {
-    this.gameService.deal();
+  getCredits() {
+    return this.getGame().credits;
   }
 
-  draw() {
-    this.gameService.draw(this.holds);
-    this.holds = [];
-  }
-
-  toggleHold(index: number) {
-    let holdIndex = this.holds.indexOf(index);
-    if (holdIndex === -1) {
-      this.holds.push(index);
-    } else {
-      this.holds.splice(holdIndex, 1);
-    }
+  getBet() {
+    return this.getGame().bet;
   }
 
   betOne() {
@@ -65,31 +54,7 @@ export class AppComponent implements OnInit {
     this.gameService.bet(bet)
   }
 
-  isReadyToDraw() {
-    return this.getGame().gameState == 'READY_TO_DRAW';
-  }
-
-  isReadyToDeal() {
+  isReadyToBet() {
     return this.getGame().gameState == 'READY_TO_DEAL';
-  }
-
-  getCredits() {
-    return this.getGame().credits;
-  }
-
-  getBet() {
-    return this.getGame().bet;
-  }
-
-  getHand() {
-    return this.getGame().hand;
-  }
-
-  getHandRank() {
-    return this.getGame().handRank;
-  }
-
-  getPayoutSchedule() {
-    return this.gameService.payoutSchedule;
   }
 }

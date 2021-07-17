@@ -29,26 +29,26 @@ export class AppPage {
   }
 
   getDealButton() {
-    return element(by.css('.hand .dealButton'));
+    return element(by.css('.dealButton'));
   }
 
   getDrawButton() {
-    return element(by.css('.hand .drawButton'));
+    return element(by.css('.drawButton'));
   }
 
   getBestHand() {
-    return element(by.css('.hand .bestHand'));
+    return element(by.css('.bestHand'));
   }
 
   getHoldButtons() {
-    return element.all(by.css('.hand .holdButton'));
+    return element.all(by.css('.holdButton'));
   }
 
   getBetOneButton() {
-    return element.all(by.css('.hand .betOneButton'));
+    return element.all(by.css('.betOneButton'));
   }
 
   getBetMaxButton() {
-    return element.all(by.css('.hand .betMaxButton'));
+    return element.all(by.css('.betMaxButton'));
   }
 }

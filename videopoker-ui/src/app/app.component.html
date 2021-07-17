@@ -13,31 +13,11 @@
       </tr>
     </table>
   </div>
-  <div class="hand">
-    <table>
-      <tr *ngIf="isNewGame()">
-        <td>CARD_BACK</td>
-        <td>CARD_BACK</td>
-        <td>CARD_BACK</td>
-        <td>CARD_BACK</td>
-        <td>CARD_BACK</td>
-      </tr>
-      <tr *ngIf="!isNewGame()">
-        <td *ngFor="let card of getHand(); let i = index;">{{card.suit}} {{card.rank}}
-          <input type="button" class="holdButton" *ngIf="isReadyToDraw()" (click)="toggleHold(i)" value="Hold"/>
-        </td>
-      </tr>
-    </table>
-    <div class="deal" *ngIf="isReadyToDeal()">
-      <button class="dealButton" (click)="deal()">Deal</button>
-      <button class="betOneButton" (click)="betOne()">Bet 1</button>
-      <button class="betMaxButton" (click)="betMax()">Bet Max</button>
-    </div>
-    <div class="draw" *ngIf="isReadyToDraw()">
-      <button class="drawButton" (click)="draw()">Draw</button>
-    </div>
-    <div *ngIf="isReadyToDeal()" class="bestHand">{{getHandRank()}}</div>
+  <div class="deal" *ngIf="isReadyToBet()">
+    <button class="betOneButton" (click)="betOne()">Bet 1</button>
+    <button class="betMaxButton" (click)="betMax()">Bet Max</button>
   </div>
+  <app-hand></app-hand>
 </div>
 
 
