@@ -14,37 +14,32 @@ export class AppComponent implements OnInit {
     this.gameService = gameService;
   }
 
-  private getGame() {
-    return this.gameService.game;
-  }
-
   ngOnInit(): void {
     this.gameService.createGame();
-    this.gameService.getPayoutSchedule()
   }
 
   isGameInitialized() {
-    return this.getGame();
+    return this.gameService.isReadyToPlay();
   }
 
   getPayoutSchedule() {
-    return this.gameService.payoutSchedule;
+    return this.gameService.getPayoutSchedule();
   }
 
   getCredits() {
-    return this.getGame().credits;
+    return this.gameService.getCredits();
   }
 
   getBet() {
-    return this.getGame().bet;
+    return this.gameService.getBet();
   }
 
   betOne() {
     let bet: number;
-    if (this.getGame().bet === 5) {
+    if (this.gameService.getBet() === 5) {
       bet = 1;
     } else {
-      bet = this.getGame().bet + 1;
+      bet = this.gameService.getBet() + 1;
     }
     this.gameService.bet(bet)
   }
@@ -55,6 +50,6 @@ export class AppComponent implements OnInit {
   }
 
   isReadyToBet() {
-    return this.getGame().gameState == 'READY_TO_DEAL';
+    return this.gameService.isReadyToBet();
   }
 }

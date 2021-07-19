@@ -1,22 +1,19 @@
 <div class="hand">
   <table>
-    <tr *ngIf="isNewGame()">
-      <td *ngFor="let card of ['CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK'];">{{card}}</td>
-    </tr>
-    <tr *ngIf="!isNewGame()">
+    <tr>
       <td *ngFor="let card of getHand(); let i = index;">{{card.suit}}<br/>{{card.rank}}</td>
     </tr>
-    <tr *ngIf="!isNewGame() && !isReadyToDeal()">
+    <tr *ngIf="!readyToDeal">
       <td *ngFor="let card of getHand(); let i = index;">
-        <input type="button" class="holdButton" *ngIf="isReadyToDraw()" (click)="toggleHold(i)" value="Hold"/>
+        <input type="button" class="holdButton" *ngIf="readyToDraw" (click)="toggleHold(i)" value="Hold"/>
       </td>
     </tr>
   </table>
-  <div class="deal" *ngIf="isReadyToDeal()">
+  <div class="deal" *ngIf="readyToDeal">
     <button class="dealButton" (click)="deal()">Deal</button>
   </div>
-  <div class="draw" *ngIf="isReadyToDraw()">
+  <div class="draw" *ngIf="readyToDraw">
     <button class="drawButton" (click)="draw()">Draw</button>
   </div>
-  <div *ngIf="isReadyToDeal()" class="bestHand">{{getHandRank()}}</div>
+  <div *ngIf="readyToDeal" class="bestHand">{{getHandRank()}}</div>
 </div>

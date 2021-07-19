@@ -8,7 +8,8 @@ import {GameService} from "../game.service";
 describe('HandComponent', () => {
   let component: HandComponent;
   let fixture: ComponentFixture<HandComponent>;
-  const mockGameService = jasmine.createSpyObj(['createGame', 'getPayoutSchedule', 'deal', 'draw', 'bet']);
+  const mockGameService = jasmine.createSpyObj(['deal', 'draw', 'getHand', 'getHandRank']);
+  const hand = [{suit: 'SPADES', rank: 'ACE'}];
   const game: Game = {
     id: '123',
     credits: 1,
@@ -22,7 +23,6 @@ describe('HandComponent', () => {
   beforeEach(async () => {
     mockGameService.deal.and.returnValue(of(game));
     mockGameService.draw.and.returnValue(of(game));
-    mockGameService.bet.and.returnValue(of(game));
 
     await TestBed.configureTestingModule({
       declarations: [HandComponent],
@@ -32,7 +32,6 @@ describe('HandComponent', () => {
 
     fixture = TestBed.createComponent(HandComponent);
     component = fixture.componentInstance;
-    component.gameService.game = game;
     fixture.detectChanges();
   });
 
@@ -56,6 +55,16 @@ describe('HandComponent', () => {
 
       expect(component.holds).toEqual([0, 4]);
     });
+
+    it('should disable deal and enable draw', () => {
+      component.readyToDeal = true;
+      component.readyToDraw = false;
+
+      component.deal();
+
+      expect(component.readyToDeal).toBeFalse();
+      expect(component.readyToDraw).toBeTrue();
+    });
   });
 
   describe('Draw', () => {
@@ -75,28 +84,30 @@ describe('HandComponent', () => {
       component.draw();
 
       expect(component.holds).toEqual([]);
-    })
+    });
+
+    it('should disable draw and enable deal', () => {
+      component.readyToDraw = true;
+      component.readyToDeal = false;
+
+      component.draw();
+
+      expect(component.readyToDraw).toBeFalse();
+      expect(component.readyToDeal).toBeTrue();
+    });
   });
 
   describe('Game State', () => {
-    it('should identify if ready to draw', () => {
-      component.gameService.game.gameState = 'READY_TO_DRAW';
+    it('should return current hand', () => {
+      mockGameService.getHand.and.returnValue(hand);
 
-      expect(component.isReadyToDraw()).toBeTrue();
-
-      component.gameService.game.gameState = 'READY_TO_DEAL';
-
-      expect(component.isReadyToDraw()).toBeFalse();
+      expect(component.getHand()).toEqual(hand)
     });
 
-    it('should identify if ready to deal', () => {
-      component.gameService.game.gameState = 'READY_TO_DEAL';
+    it('should return current handRank', () => {
+      mockGameService.getHandRank.and.returnValue('FULL_HOUSE');
 
-      expect(component.isReadyToDeal()).toBeTrue();
-
-      component.gameService.game.gameState = 'READY_TO_DRAW';
-
-      expect(component.isReadyToDeal()).toBeFalse();
+      expect(component.getHandRank()).toEqual('FULL_HOUSE');
     });
   });
 });

@@ -7,29 +7,26 @@ import {GameService} from "../game.service";
   styleUrls: ['./hand.component.css']
 })
 export class HandComponent {
-
   gameService: GameService;
   holds: number[] = [];
+  readyToDeal: boolean = true;
+  readyToDraw: boolean = false;
 
   constructor(gameService: GameService) {
     this.gameService = gameService;
   }
 
-  private getGame() {
-    return this.gameService.game;
-  }
-
-  isNewGame() {
-    return this.getGame().hand.length == 0;
-  }
-
   deal(): void {
     this.gameService.deal();
+    this.readyToDeal = false;
+    this.readyToDraw = true;
   }
 
   draw() {
     this.gameService.draw(this.holds);
     this.holds = [];
+    this.readyToDeal = true;
+    this.readyToDraw = false;
   }
 
   toggleHold(index: number) {
@@ -41,19 +38,11 @@ export class HandComponent {
     }
   }
 
-  isReadyToDraw() {
-    return this.getGame().gameState == 'READY_TO_DRAW';
-  }
-
-  isReadyToDeal() {
-    return this.getGame().gameState == 'READY_TO_DEAL';
-  }
-
   getHand() {
-    return this.getGame().hand;
+    return this.gameService.getHand();
   }
 
   getHandRank() {
-    return this.getGame().handRank;
+    return this.gameService.getHandRank();
   }
 }

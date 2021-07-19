@@ -29,8 +29,8 @@ describe('Poker', () => {
       expect(payoutScheduleForJacksOrBetter).toEqual(['JACKS_OR_BETTER', '1', '2', '3', '4', '5']);
     });
 
-    it('should display undealt hand', async () => {
-      expect(await page.getHand()).toEqual(['CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK']);
+    it('should not display undealt hand', async () => {
+      expect(await page.getHand()).toEqual([]);
     });
 
     it('should let user deal', async () => {
@@ -61,9 +61,9 @@ describe('Poker', () => {
     });
 
     it('should display fresh hand when deal button is clicked', async () => {
-        const dealButton = page.getDealButton();
-        await dealButton.click();
-        expect(await page.getHand()).not.toEqual(['CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK']);
+      const dealButton = page.getDealButton();
+      await dealButton.click();
+      expect(await page.getHand()).not.toEqual(['CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK', 'CARD_BACK']);
     });
 
     it('should decrease credits by amount of bet', async () => {
