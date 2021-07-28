@@ -24,8 +24,8 @@ export class AppPage {
   }
 
   async getHand() {
-    return element.all(by.css('.hand tr td'))
-      .map(e => e!.getText()) as Promise<string[]>;
+    return element.all(by.css('.hand tr td img'))
+      .map(e => e!.getAttribute('src')) as Promise<string[]>;
   }
 
   getDealButton() {

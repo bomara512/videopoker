@@ -1,7 +1,9 @@
 <div class="hand">
   <table>
     <tr>
-      <td *ngFor="let card of getHand(); let i = index;">{{card.suit}}<br/>{{card.rank}}</td>
+      <td *ngFor="let card of getHand(); let i = index;">
+        <img src="assets/cards/{{card.rank}}_{{card.suit}}.png" class="playing-card" alt="{{card.rank}}_{{card.suit}}"/>
+      </td>
     </tr>
     <tr *ngIf="!readyToDeal">
       <td *ngFor="let card of getHand(); let i = index;">
