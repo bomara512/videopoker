@@ -1,8 +1,19 @@
-<div class="game" *ngIf="isGameInitialized()">
-  <h1>Total Credits: {{getCredits()}}</h1>
-  <h2>Bet: {{getBet()}}</h2>
-  <div class="payout">
-    <table>
+<div class="container game" *ngIf="isGameInitialized()">
+  <div class="text-center"><h1>Total Credits: {{getCredits()}}</h1></div>
+  <div class="text-center"><h2>Bet: {{getBet()}}</h2></div>
+  <div class="row payout">
+    <table class="table table-sm table-bordered table-striped">
+      <thead>
+      <tr>
+        <th></th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+      </tr>
+      </thead>
+      <tbody>
       <tr *ngFor="let payout of getPayoutSchedule()">
         <td>{{payout.hand}}</td>
         <td>{{payout.payouts[0]}}</td>
@@ -11,11 +22,12 @@
         <td>{{payout.payouts[3]}}</td>
         <td>{{payout.payouts[4]}}</td>
       </tr>
+      </tbody>
     </table>
   </div>
-  <div class="deal" *ngIf="isReadyToBet()">
-    <button class="betOneButton" (click)="betOne()">Bet 1</button>
-    <button class="betMaxButton" (click)="betMax()">Bet Max</button>
+  <div class="row row-cols-sm-6 deal" *ngIf="isReadyToBet()">
+    <button class="btn btn-dark m-2 betOneButton" (click)="betOne()">Bet 1</button>
+    <button class="btn btn-dark m-2 betMaxButton" (click)="betMax()">Bet Max</button>
   </div>
   <app-hand></app-hand>
 </div>

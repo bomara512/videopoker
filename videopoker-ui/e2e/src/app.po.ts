@@ -14,7 +14,7 @@ export class AppPage {
   }
 
   async getPayoutSchedule() {
-    return element.all(by.css('.payout table tr'));
+    return element.all(by.css('.payout table tbody tr'));
   }
 
   async getPayoutScheduleFor(hand: string) {
