@@ -3,3 +3,9 @@
   border: white medium solid;
   border-radius: 10px
 }
+
+.held-playing-card {
+  width: 100px;
+  border: #ffc107 medium solid;
+  border-radius: 10px
+}

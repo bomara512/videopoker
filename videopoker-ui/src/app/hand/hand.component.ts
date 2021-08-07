@@ -45,4 +45,8 @@ export class HandComponent {
   getHandRank() {
     return this.gameService.getHandRank();
   }
+
+  isHeld(index: number) {
+    return this.holds.indexOf(index) !== -1;
+  }
 }

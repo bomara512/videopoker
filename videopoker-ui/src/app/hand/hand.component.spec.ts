@@ -54,6 +54,12 @@ describe('HandComponent', () => {
       component.toggleHold(2);
 
       expect(component.holds).toEqual([0, 4]);
+
+      expect(component.isHeld(0)).toBeTrue();
+      expect(component.isHeld(4)).toBeTrue();
+      expect(component.isHeld(1)).toBeFalse();
+      expect(component.isHeld(2)).toBeFalse();
+      expect(component.isHeld(3)).toBeFalse();
     });
 
     it('should disable deal and enable draw', () => {
