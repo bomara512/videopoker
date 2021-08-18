@@ -1,19 +1,30 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GameService} from "../game.service";
+import {Card} from "../game";
 
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
   styleUrls: ['./hand.component.css']
 })
-export class HandComponent {
+export class HandComponent implements OnInit {
   gameService: GameService;
   holds: number[] = [];
   readyToDeal: boolean = true;
   readyToDraw: boolean = false;
+  hand: Card[] = [];
+  handRank?: string;
 
   constructor(gameService: GameService) {
     this.gameService = gameService;
+  }
+
+  ngOnInit(): void {
+    this.gameService.gameUpdate$.subscribe(
+      gameUpdate => {
+        this.hand = gameUpdate.hand;
+        this.handRank = gameUpdate.handRank;
+      });
   }
 
   deal(): void {
@@ -36,14 +47,6 @@ export class HandComponent {
     } else {
       this.holds.splice(holdIndex, 1);
     }
-  }
-
-  getHand() {
-    return this.gameService.getHand();
-  }
-
-  getHandRank() {
-    return this.gameService.getHandRank();
   }
 
   isHeld(index: number) {

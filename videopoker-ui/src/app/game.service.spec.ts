@@ -12,7 +12,6 @@ describe('GameService', () => {
   let service: GameService;
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
-  const hand = [{suit: 'SPADES', rank: 'ACE'}];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -73,7 +72,7 @@ describe('GameService', () => {
   it('should call backend service to set current bet', () => {
     service['game'] = game;
 
-    service.bet(3)
+    service.bet(3);
 
     const req = httpMock.expectOne('http://localhost:8080/game/123/bet?amount=3');
     req.flush(game);
@@ -84,60 +83,8 @@ describe('GameService', () => {
     httpMock.verify();
   });
 
-  describe('Initial State', () => {
-    it('should identify if ready to play', () => {
-      expect(service.isReadyToPlay()).toBeFalse();
-
-      service['game'] = game;
-      expect(service.isReadyToPlay()).toBeTrue();
-    });
-
-    it('should identify if new game', () => {
-      service['game'] = game;
-      service['game'].hand = [];
-      expect(service.isNewGame()).toBeTrue();
-
-      service['game'].hand = hand;
-      expect(service.isNewGame()).toBeFalse();
-    });
-  });
-
-  describe('Game State', () => {
-    beforeEach(() => {
-      service['game'] = game;
-    });
-
-    it('should identify if ready to bet', () => {
-      service['game'].gameState = 'READY_TO_DEAL';
-      expect(service.isReadyToBet()).toBeTrue();
-
-      service['game'].gameState = 'READY_TO_DRAW';
-      expect(service.isReadyToBet()).toBeFalse();
-    });
-
-    it('should return payout schedule', () => {
-      service['payoutSchedule'] = payoutSchedule;
-      expect(service.getPayoutSchedule()).toEqual(payoutSchedule);
-    });
-
-    it('should return current bet', () => {
-      service['game'].bet = 2;
-      expect(service.getBet()).toEqual(2)
-    });
-
-    it('should return current credits', () => {
-      service['game'].credits = 25;
-      expect(service.getCredits()).toEqual(25);
-    });
-
-    it('should return current hand', () => {
-      service['game'].hand = hand;
-      expect(service.getHand()).toEqual(hand)
-    });
-
-    it('should return current handRank', () => {
-      service['game'].handRank = 'FULL_HOUSE';
-      expect(service.getHandRank()).toEqual('FULL_HOUSE');
-    });
+  it('should return payout schedule', () => {
+    service['payoutSchedule'] = payoutSchedule;
+    expect(service.getPayoutSchedule()).toEqual(payoutSchedule);
   });
 });
