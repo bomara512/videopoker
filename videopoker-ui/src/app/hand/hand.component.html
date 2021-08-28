@@ -9,15 +9,9 @@
     </tr>
     <tr *ngIf="!readyToDeal">
       <td *ngFor="let card of hand; let i = index;">
-        <button class="btn btn-outline-dark m-2 holdButton" *ngIf="readyToDraw" (click)="toggleHold(i)">Hold</button>
+        <button class="btn btn-outline-dark m-2 holdButton" (click)="toggleHold(i)">Hold</button>
       </td>
     </tr>
   </table>
-  <div class="row row-cols-6 deal" *ngIf="readyToDeal">
-    <button class="btn btn-success m-2 dealButton" (click)="deal()">Deal</button>
-  </div>
-  <div class="row row-cols-6 draw" *ngIf="readyToDraw">
-    <button class="btn btn-success m-2 drawButton" (click)="draw()">Draw</button>
-  </div>
   <div *ngIf="readyToDeal" class="bestHand">{{handRank}}</div>
 </div>

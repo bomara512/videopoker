@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {GameService} from "../game.service";
 import {Card} from "../game";
 
@@ -11,9 +11,10 @@ export class HandComponent implements OnInit {
   gameService: GameService;
   holds: number[] = [];
   readyToDeal: boolean = true;
-  readyToDraw: boolean = false;
   hand: Card[] = [];
   handRank?: string;
+
+  @Output() holdsChanged: EventEmitter<number[]> = new EventEmitter();
 
   constructor(gameService: GameService) {
     this.gameService = gameService;
@@ -24,20 +25,9 @@ export class HandComponent implements OnInit {
       gameUpdate => {
         this.hand = gameUpdate.hand;
         this.handRank = gameUpdate.handRank;
+        this.readyToDeal = gameUpdate.gameState == 'READY_TO_DEAL';
+        this.holds = [];
       });
-  }
-
-  deal(): void {
-    this.gameService.deal();
-    this.readyToDeal = false;
-    this.readyToDraw = true;
-  }
-
-  draw() {
-    this.gameService.draw(this.holds);
-    this.holds = [];
-    this.readyToDeal = true;
-    this.readyToDraw = false;
   }
 
   toggleHold(index: number) {
@@ -47,6 +37,8 @@ export class HandComponent implements OnInit {
     } else {
       this.holds.splice(holdIndex, 1);
     }
+
+    this.holdsChanged.emit(this.holds);
   }
 
   isHeld(index: number) {

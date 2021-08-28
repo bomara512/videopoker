@@ -11,10 +11,11 @@ export class AppComponent implements OnInit {
   title = 'videopoker-ui';
   gameService: GameService;
   isGameInitialized: boolean = false;
-  isReadyToBet: boolean = false;
+  readyToDeal: boolean = true;
   credits: number = 0;
   bet: number = 0;
   payoutSchedule: Payout[] = [];
+  holds: number[] = [];
 
   constructor(gameService: GameService) {
     this.gameService = gameService;
@@ -26,7 +27,7 @@ export class AppComponent implements OnInit {
       gameUpdate => {
         this.payoutSchedule = this.gameService.getPayoutSchedule();
         this.isGameInitialized = true;
-        this.isReadyToBet = gameUpdate.gameState == 'READY_TO_DEAL';
+        this.readyToDeal = gameUpdate.gameState == 'READY_TO_DEAL';
         this.credits = gameUpdate.credits;
         this.bet = gameUpdate.bet;
       });
@@ -45,5 +46,17 @@ export class AppComponent implements OnInit {
   betMax() {
     let bet: number = 5;
     this.gameService.bet(bet)
+  }
+
+  deal(): void {
+    this.gameService.deal();
+  }
+
+  draw() {
+    this.gameService.draw(this.holds);
+  }
+
+  holdsChangedHandler(holds: number[]) {
+    this.holds = holds;
   }
 }

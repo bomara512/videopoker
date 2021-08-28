@@ -25,11 +25,15 @@
       </tbody>
     </table>
   </div>
-  <div class="row row-cols-sm-6 deal" *ngIf="isReadyToBet">
+  <app-hand (holdsChanged)="holdsChangedHandler($event)"></app-hand>
+  <div class="row row-cols-sm-6 deal" *ngIf="readyToDeal">
     <button class="btn btn-dark m-2 betOneButton" (click)="betOne()">Bet 1</button>
     <button class="btn btn-dark m-2 betMaxButton" (click)="betMax()">Bet Max</button>
+    <button class="btn btn-success m-2 dealButton" (click)="deal()">Deal</button>
   </div>
-  <app-hand></app-hand>
+  <div class="row row-cols-sm-6 deal" *ngIf="!readyToDeal">
+    <button class="btn btn-success m-2 drawButton" (click)="draw()">Draw</button>
+  </div>
 </div>
 
 

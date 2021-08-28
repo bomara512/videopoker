@@ -6,7 +6,7 @@ import {HandComponent} from "./hand/hand.component";
 import {of} from "rxjs";
 
 describe('AppComponent', () => {
-  const mockGameService = jasmine.createSpyObj(['createGame', 'getPayoutSchedule', 'draw', 'getHand', 'getHandRank', 'bet']);
+  const mockGameService = jasmine.createSpyObj(['createGame', 'getPayoutSchedule', 'deal', 'draw', 'bet']);
   const game: Game = {
     id: '123',
     credits: 1,
@@ -47,7 +47,7 @@ describe('AppComponent', () => {
 
     expect(component.payoutSchedule).toEqual(payoutSchedule);
     expect(component.isGameInitialized).toEqual(true);
-    expect(component.isReadyToBet).toEqual(true);
+    expect(component.readyToDeal).toEqual(true);
     expect(component.credits).toEqual(1);
     expect(component.bet).toEqual(3);
   });
@@ -83,6 +83,38 @@ describe('AppComponent', () => {
       component.bet = 5;
       component.betMax();
       expect(mockGameService.bet).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('deal', () => {
+    it('should call game service "deal" when deal button clicked', () => {
+      component.deal();
+
+      expect(mockGameService.deal).toHaveBeenCalled();
+    });
+  });
+
+  describe('draw', () => {
+    it('should call game service "draw" when draw button clicked', () => {
+      const holds: number[] = [0, 2, 4];
+
+      component.holds = holds;
+
+      component.draw();
+
+      expect(mockGameService.draw).toHaveBeenCalledWith(holds);
+    });
+  });
+
+  describe('holdsChangedHandler', () => {
+    it('should update holds', () => {
+      const holds: number[] = [0, 2, 4];
+
+      component.holds = [];
+
+      component.holdsChangedHandler(holds);
+
+      expect(component.holds).toEqual(holds);
     });
   });
 });

@@ -2,22 +2,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {HandComponent} from './hand.component';
 import {of} from "rxjs";
-import {Game} from "../game";
 import {GameService} from "../game.service";
 
 describe('HandComponent', () => {
   let component: HandComponent;
   let fixture: ComponentFixture<HandComponent>;
-  const mockGameService = jasmine.createSpyObj(['deal', 'draw']);
-  const game: Game = {
-    id: '123',
-    credits: 1,
-    hand: [],
-    deckSize: 2,
-    gameState: "testGameState",
-    bet: 3,
-    handRank: "testHandRank"
-  };
+  const mockGameService = jasmine.createSpyObj(['']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,75 +17,68 @@ describe('HandComponent', () => {
 
     fixture = TestBed.createComponent(HandComponent);
     component = fixture.componentInstance;
-    component.gameService.gameUpdate$ = of(game);
-    fixture.detectChanges();
   });
 
-  describe('Deal', () => {
-    it('should call game service "deal" when deal button clicked', () => {
-      component.deal();
+  describe('Hand', () => {
+    it('should subscribe to game updates', () => {
+      component.holds = [1, 2, 3];
 
-      expect(mockGameService.deal).toHaveBeenCalled();
-    });
+      component.gameService.gameUpdate$ = of({
+        id: '123',
+        credits: 1,
+        hand: [{rank: 'TWO', suit: 'CLUB'}],
+        deckSize: 2,
+        gameState: 'READY_TO_DRAW',
+        bet: 3,
+        handRank: "FLUSH"
+      });
 
-    it('should toggle holds when selected', () => {
-      component.holds = [];
+      fixture.detectChanges();
 
-      component.toggleHold(0);
-      component.toggleHold(2);
-      component.toggleHold(4);
-
-      expect(component.holds).toEqual([0, 2, 4]);
-
-      component.toggleHold(2);
-
-      expect(component.holds).toEqual([0, 4]);
-
-      expect(component.isHeld(0)).toBeTrue();
-      expect(component.isHeld(4)).toBeTrue();
-      expect(component.isHeld(1)).toBeFalse();
-      expect(component.isHeld(2)).toBeFalse();
-      expect(component.isHeld(3)).toBeFalse();
-    });
-
-    it('should disable "deal" and enable "draw"', () => {
-      component.readyToDeal = true;
-      component.readyToDraw = false;
-
-      component.deal();
-
-      expect(component.readyToDeal).toBeFalse();
-      expect(component.readyToDraw).toBeTrue();
-    });
-  });
-
-  describe('Draw', () => {
-    const holds: number[] = [0, 2, 4];
-
-    beforeEach(() => {
-      component.holds = holds;
-    });
-
-    it('should call game service "draw" when draw button clicked', () => {
-      component.draw();
-
-      expect(mockGameService.draw).toHaveBeenCalledWith(holds);
-    });
-
-    it('should reset holds', () => {
-      component.draw();
-
+      expect(component.hand).toEqual([{rank: 'TWO', suit: 'CLUB'}]);
+      expect(component.handRank).toEqual('FLUSH');
+      expect(component.readyToDeal).toEqual(false);
       expect(component.holds).toEqual([]);
     });
 
-    it('should disable "draw" and enable "deal"', () => {
-      component.readyToDraw = true;
-      component.readyToDeal = false;
+    it('should identify if a card is held or not', () => {
+      component.holds = [1, 2, 3];
 
-      component.draw();
+      expect(component.isHeld(0)).toBeFalse();
+      expect(component.isHeld(4)).toBeFalse();
+      expect(component.isHeld(1)).toBeTrue();
+      expect(component.isHeld(2)).toBeTrue();
+      expect(component.isHeld(3)).toBeTrue();
+    });
 
-      expect(component.readyToDraw).toBeFalse();
-      expect(component.readyToDeal).toBeTrue();
+    describe('toggleHold', () => {
+      it('should toggle holds when selected', () => {
+        component.holds = [];
+
+        component.toggleHold(0);
+        component.toggleHold(2);
+        component.toggleHold(4);
+
+        expect(component.holds).toEqual([0, 2, 4]);
+
+        component.toggleHold(2);
+
+        expect(component.holds).toEqual([0, 4]);
+      });
+
+      it('should emit hold change events', () => {
+        spyOn(component.holdsChanged, 'emit');
+        component.holds = [];
+
+        component.toggleHold(0);
+        expect(component.holdsChanged.emit).toHaveBeenCalledWith([0]);
+
+        component.toggleHold(2);
+        expect(component.holdsChanged.emit).toHaveBeenCalledWith([0, 2]);
+
+        component.toggleHold(2);
+        expect(component.holdsChanged.emit).toHaveBeenCalledWith([0]);
+      });
     });
   });
 });
