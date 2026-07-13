@@ -1,10 +1,7 @@
 package net.bitbucketlist.integration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bitbucketlist.videopoker.GameService;
 import net.bitbucketlist.videopoker.GameState;
-import net.bitbucketlist.videopoker.TestRedisConfiguration;
 import net.bitbucketlist.videopoker.VideoPokerApplication;
 import net.bitbucketlist.videopoker.dto.CardDto;
 import net.bitbucketlist.videopoker.dto.GameDto;
@@ -14,10 +11,16 @@ import net.bitbucketlist.videopoker.scoring.PokerHandEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +32,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {VideoPokerApplication.class, TestRedisConfiguration.class})
+@Testcontainers
+@SpringBootTest(classes = VideoPokerApplication.class)
 @AutoConfigureMockMvc
 class GameControllerIT {
+    @Container
+    @ServiceConnection(name = "redis")
+    static GenericContainer<?> redis = new GenericContainer<>("redis:alpine").withExposedPorts(6379);
+
     @Autowired
     MockMvc mockMvc;
 
