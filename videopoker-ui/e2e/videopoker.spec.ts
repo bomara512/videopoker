@@ -26,7 +26,8 @@ test.describe('Poker', () => {
   });
 
   test.afterEach(() => {
-    expect(consoleErrors).toEqual([]);
+    const errors = consoleErrors.splice(0);
+    expect(errors).toEqual([]);
   });
 
   test.describe('New Game', () => {

@@ -18,4 +18,4 @@ the backend + Redis must already be running.
 
 ## Build
 
-`npm run build` outputs to `dist/`.
+`npm run build` outputs to `dist/videopoker-ui/`.
