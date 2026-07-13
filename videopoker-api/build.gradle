@@ -1,13 +1,18 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'com.avast.gradle.docker-compose' version '0.7.1'
+    id 'org.springframework.boot' version '4.1.0'
     id 'java'
 }
 
 group = 'net.bitbucketlist'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 configurations {
     compileOnly {
@@ -20,31 +25,32 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    annotationProcessor platform(SpringBootPlugin.BOM_COORDINATES)
 
+    annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
 
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'redis.clients:jedis:3.3.0'
 
-    testImplementation 'it.ozimov:embedded-redis:0.7.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
-    exclude("**/integration/**")
+    exclude '**/integration/**'
+    jvmArgs '-XX:+EnableDynamicAgentLoading'   // silence Mockito dynamic-agent warning on JDK 21+
 }
 
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
     useJUnitPlatform()
-    include("**/integration/**")
+    // Gradle 8+ removed the old convention that pointed bare Test tasks at the test source set — set explicitly:
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    include '**/integration/**'
+    jvmArgs '-XX:+EnableDynamicAgentLoading'
 }
-
-dockerCompose {
-    useComposeFiles = ['docker-compose.yml']
-}
-
