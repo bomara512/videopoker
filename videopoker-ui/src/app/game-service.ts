@@ -1,5 +1,5 @@
 import {inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Game, Payout} from './game';
 
 const REST_API_SERVER = 'http://localhost:8080';
@@ -11,27 +11,28 @@ export class GameService {
   readonly game = signal<Game | null>(null);
   readonly payoutSchedule = signal<Payout[]>([]);
   readonly holds = signal<number[]>([]);
+  readonly errorMessage = signal<string | null>(null);
 
   createGame(): void {
     this.httpClient.post<Game>(`${REST_API_SERVER}/game`, null)
-      .subscribe(game => this.updateGame(game));
+      .subscribe({next: game => this.updateGame(game), error: err => this.handleError(err)});
     this.httpClient.get<Payout[]>(`${REST_API_SERVER}/game/payout-schedule`)
-      .subscribe(payouts => this.payoutSchedule.set(payouts));
+      .subscribe({next: payouts => this.payoutSchedule.set(payouts), error: err => this.handleError(err)});
   }
 
   deal(): void {
     this.httpClient.put<Game>(`${this.gameUrl()}/deal`, null)
-      .subscribe(game => this.updateGame(game));
+      .subscribe({next: game => this.updateGame(game), error: err => this.handleError(err)});
   }
 
   draw(): void {
     this.httpClient.put<Game>(`${this.gameUrl()}/draw?holds=${this.holds().join(',')}`, null)
-      .subscribe(game => this.updateGame(game));
+      .subscribe({next: game => this.updateGame(game), error: err => this.handleError(err)});
   }
 
   bet(amount: number): void {
     this.httpClient.put<Game>(`${this.gameUrl()}/bet?amount=${amount}`, null)
-      .subscribe(game => this.updateGame(game));
+      .subscribe({next: game => this.updateGame(game), error: err => this.handleError(err)});
   }
 
   toggleHold(index: number): void {
@@ -42,9 +43,18 @@ export class GameService {
     }
   }
 
+  dismissError(): void {
+    this.errorMessage.set(null);
+  }
+
+  private handleError(error: HttpErrorResponse): void {
+    this.errorMessage.set(error.error?.message ?? 'Something went wrong talking to the server');
+  }
+
   private updateGame(game: Game): void {
     this.game.set(game);
     this.holds.set([]);
+    this.errorMessage.set(null);
   }
 
   private gameUrl(): string {

@@ -106,4 +106,42 @@ describe('GameService', () => {
       expect(service.holds()).toEqual([]);
     });
   });
+
+  describe('errors', () => {
+    it('surfaces the backend error message', () => {
+      service.game.set(game);
+
+      service.deal();
+      httpMock.expectOne('http://localhost:8080/game/123/deal')
+        .flush({message: 'Not enough credits'}, {status: 400, statusText: 'Bad Request'});
+
+      expect(service.errorMessage()).toEqual('Not enough credits');
+    });
+
+    it('falls back to a generic message when the error has no body message', () => {
+      service.game.set(game);
+
+      service.bet(3);
+      httpMock.expectOne('http://localhost:8080/game/123/bet?amount=3')
+        .flush(null, {status: 500, statusText: 'Server Error'});
+
+      expect(service.errorMessage()).toEqual('Something went wrong talking to the server');
+    });
+
+    it('clears the error on the next successful action', () => {
+      service.game.set(game);
+      service.errorMessage.set('stale error');
+
+      service.deal();
+      httpMock.expectOne('http://localhost:8080/game/123/deal').flush(game);
+
+      expect(service.errorMessage()).toBeNull();
+    });
+
+    it('dismissError clears the message', () => {
+      service.errorMessage.set('boom');
+      service.dismissError();
+      expect(service.errorMessage()).toBeNull();
+    });
+  });
 });

@@ -12,6 +12,7 @@ export class App implements OnInit {
   private readonly gameService = inject(GameService);
 
   protected readonly payoutSchedule = this.gameService.payoutSchedule;
+  protected readonly errorMessage = this.gameService.errorMessage;
   protected readonly isGameInitialized = computed(() => this.gameService.game() !== null);
   protected readonly readyToDeal = computed(() => this.gameService.game()?.gameState === 'READY_TO_DEAL');
   protected readonly credits = computed(() => this.gameService.game()?.credits ?? 0);
@@ -35,5 +36,9 @@ export class App implements OnInit {
 
   draw(): void {
     this.gameService.draw();
+  }
+
+  dismissError(): void {
+    this.gameService.dismissError();
   }
 }

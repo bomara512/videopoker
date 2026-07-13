@@ -15,14 +15,17 @@ describe('App', () => {
   const mockGame = signal<Game | null>(null);
   const mockPayouts = signal<Payout[]>([]);
   const mockHolds = signal<number[]>([]);
+  const mockErrorMessage = signal<string | null>(null);
   const mockGameService = {
     game: mockGame,
     payoutSchedule: mockPayouts,
     holds: mockHolds,
+    errorMessage: mockErrorMessage,
     createGame: vi.fn(),
     deal: vi.fn(),
     draw: vi.fn(),
     bet: vi.fn(),
+    dismissError: vi.fn(),
   };
 
   let fixture: ComponentFixture<App>;
@@ -33,6 +36,7 @@ describe('App', () => {
     mockGame.set(null);
     mockPayouts.set([]);
     mockHolds.set([]);
+    mockErrorMessage.set(null);
 
     await TestBed.configureTestingModule({
       imports: [App],
@@ -108,5 +112,27 @@ describe('App', () => {
   it('draws via the game service', () => {
     component.draw();
     expect(mockGameService.draw).toHaveBeenCalledWith();
+  });
+
+  describe('error alert', () => {
+    it('shows the backend error message', async () => {
+      mockGameService.errorMessage.set('Not enough credits');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelector('.errorMessage').textContent)
+        .toContain('Not enough credits');
+    });
+
+    it('is absent when there is no error', () => {
+      expect(fixture.nativeElement.querySelector('.errorMessage')).toBeNull();
+    });
+
+    it('dismisses via the close button', async () => {
+      mockGameService.errorMessage.set('boom');
+      await fixture.whenStable();
+
+      (fixture.nativeElement.querySelector('.errorMessage .btn-close') as HTMLButtonElement).click();
+      expect(mockGameService.dismissError).toHaveBeenCalled();
+    });
   });
 });

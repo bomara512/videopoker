@@ -1,3 +1,11 @@
+@if (errorMessage()) {
+  <div class="container">
+    <div class="alert alert-danger alert-dismissible errorMessage" role="alert">
+      {{errorMessage()}}
+      <button type="button" class="btn-close" (click)="dismissError()" aria-label="Close"></button>
+    </div>
+  </div>
+}
 @if (isGameInitialized()) {
   <div class="container game">
     <div class="text-center"><h1>Total Credits: {{credits()}}</h1></div>
