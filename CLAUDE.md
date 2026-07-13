@@ -12,7 +12,7 @@ Video poker game with two modules:
 
 ### Backend (from repo root)
 
-The build declares a Java 25 toolchain — any JDK 17+ can launch Gradle and it will locate/download JDK 25 itself.
+The build declares a Java 25 toolchain with the foojay resolver — any JDK 17+ can launch Gradle, and it will download JDK 25 automatically if missing.
 
 ```bash
 ./gradlew                      # default tasks: clean, test, integrationTest
