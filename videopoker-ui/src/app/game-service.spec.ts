@@ -143,5 +143,18 @@ describe('GameService', () => {
       service.dismissError();
       expect(service.errorMessage()).toBeNull();
     });
+
+    it('preserves holds when an action fails', () => {
+      service.game.set(game);
+      service.toggleHold(1);
+      service.toggleHold(3);
+
+      service.draw();
+      httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,3')
+        .flush({message: 'boom'}, {status: 400, statusText: 'Bad Request'});
+
+      expect(service.holds()).toEqual([1, 3]);
+      expect(service.errorMessage()).toEqual('boom');
+    });
   });
 });
