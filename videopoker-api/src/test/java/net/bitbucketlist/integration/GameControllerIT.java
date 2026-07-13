@@ -80,16 +80,16 @@ class GameControllerIT {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[*].id", containsInAnyOrder(game1.getId().toString(), game2.getId().toString())));
+            .andExpect(jsonPath("$[*].id", containsInAnyOrder(game1.id().toString(), game2.id().toString())));
     }
 
     @Test
     void changeBet() throws Exception {
         GameDto game = gameService.createGame();
 
-        assertThat(game.getBet()).isEqualTo(1);
+        assertThat(game.bet()).isEqualTo(1);
 
-        mockMvc.perform(put("/game/" + game.getId() + "/bet?amount=5"))
+        mockMvc.perform(put("/game/" + game.id() + "/bet?amount=5"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.bet").value(5));
     }
@@ -97,11 +97,11 @@ class GameControllerIT {
     @Test
     void changeBet_invalidState() throws Exception {
         GameDto game = gameService.createGame();
-        gameService.deal(game.getId());
+        gameService.deal(game.id());
 
-        mockMvc.perform(put("/game/" + game.getId() + "/bet?amount=5"))
+        mockMvc.perform(put("/game/" + game.id() + "/bet?amount=5"))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.message").value("Unable to change bet for gameId: " + game.getId()));
+            .andExpect(jsonPath("$.message").value("Unable to change bet for gameId: " + game.id()));
     }
 
     @Test
@@ -116,11 +116,11 @@ class GameControllerIT {
     @Test
     void deal() throws Exception {
         GameDto game = gameService.createGame();
-        gameService.setBet(game.getId(), 5);
+        gameService.setBet(game.id(), 5);
 
-        mockMvc.perform(put("/game/" + game.getId() + "/deal"))
+        mockMvc.perform(put("/game/" + game.id() + "/deal"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(game.getId().toString()))
+            .andExpect(jsonPath("$.id").value(game.id().toString()))
             .andExpect(jsonPath("$.hand.length()").value(5))
             .andExpect(jsonPath("$.deckSize").value(47))
             .andExpect(jsonPath("$.gameState").value(GameState.READY_TO_DRAW.name()))
@@ -131,11 +131,11 @@ class GameControllerIT {
     @Test
     void deal_invalidState() throws Exception {
         GameDto game = gameService.createGame();
-        gameService.deal(game.getId());
+        gameService.deal(game.id());
 
-        mockMvc.perform(put("/game/" + game.getId() + "/deal"))
+        mockMvc.perform(put("/game/" + game.id() + "/deal"))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.message").value("Unable to deal for gameId: " + game.getId()));
+            .andExpect(jsonPath("$.message").value("Unable to deal for gameId: " + game.id()));
     }
 
     @Test
@@ -150,9 +150,9 @@ class GameControllerIT {
     @Test
     void draw() throws Exception {
         GameDto game = gameService.createGame();
-        List<CardDto> originalHand = gameService.deal(game.getId()).getHand();
+        List<CardDto> originalHand = gameService.deal(game.id()).hand();
 
-        MvcResult mvcResult = mockMvc.perform(put("/game/" + game.getId() + "/draw?holds=0,2,4"))
+        MvcResult mvcResult = mockMvc.perform(put("/game/" + game.id() + "/draw?holds=0,2,4"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.hand").isArray())
             .andExpect(jsonPath("$.hand.length()").value(5))
@@ -162,22 +162,22 @@ class GameControllerIT {
             .andReturn();
 
         GameDto gameDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), GameDto.class);
-        assertThat(gameDto.getHand().get(0)).isEqualTo(originalHand.get(0));
-        assertThat(gameDto.getHand().get(1)).isNotEqualTo(originalHand.get(1));
-        assertThat(gameDto.getHand().get(2)).isEqualTo(originalHand.get(2));
-        assertThat(gameDto.getHand().get(3)).isNotEqualTo(originalHand.get(3));
-        assertThat(gameDto.getHand().get(4)).isEqualTo(originalHand.get(4));
+        assertThat(gameDto.hand().get(0)).isEqualTo(originalHand.get(0));
+        assertThat(gameDto.hand().get(1)).isNotEqualTo(originalHand.get(1));
+        assertThat(gameDto.hand().get(2)).isEqualTo(originalHand.get(2));
+        assertThat(gameDto.hand().get(3)).isNotEqualTo(originalHand.get(3));
+        assertThat(gameDto.hand().get(4)).isEqualTo(originalHand.get(4));
     }
 
     @Test
     void draw_invalidState() throws Exception {
         GameDto game = gameService.createGame();
-        gameService.deal(game.getId());
-        gameService.draw(game.getId(), Collections.emptyList());
+        gameService.deal(game.id());
+        gameService.draw(game.id(), Collections.emptyList());
 
-        mockMvc.perform(put("/game/" + game.getId() + "/draw?holds=0,2,4"))
+        mockMvc.perform(put("/game/" + game.id() + "/draw?holds=0,2,4"))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.message").value("Unable to draw for gameId: " + game.getId()));
+            .andExpect(jsonPath("$.message").value("Unable to draw for gameId: " + game.id()));
     }
 
     @Test
