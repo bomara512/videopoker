@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Video poker game with two modules:
 - `videopoker-api` — Spring Boot 2.3 (Java 11) REST backend, game state stored in Redis
-- `videopoker-ui` — Angular 11 frontend (listed in `settings.gradle` but built with npm, not Gradle)
+- `videopoker-ui` — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)
 
 ## Commands
 
@@ -39,14 +39,16 @@ cd videopoker-api && docker compose up -d    # or: ./gradlew composeUp
 
 ### Frontend (from videopoker-ui/)
 
+Requires Node 24: `nvm use` (reads `.nvmrc`).
+
 ```bash
 npm start        # ng serve, http://localhost:4200
-npm test         # Karma/Jasmine unit tests
-npm run lint     # tslint via ng lint
+npm test         # Vitest unit tests; single file: ng test --include='**/game-service.spec.ts'
+npm run e2e      # Playwright; starts ng serve itself, needs backend + Redis running
 npm run build    # ng build
 ```
 
-The UI hardcodes the API base URL `http://localhost:8080` in `src/app/game.service.ts`; the controller has an open `@CrossOrigin` to allow this.
+The UI hardcodes the API base URL `http://localhost:8080` in `src/app/game-service.ts`; the controller has an open `@CrossOrigin` to allow this. Game and payout-schedule state are held in `GameService` signals (`game`, `payoutSchedule`).
 
 ## Architecture
 

@@ -14,7 +14,8 @@ Or run the built jar instead of `bootRun`:
 > ./gradlew build && java -jar videopoker-api/build/libs/videopoker-api-0.0.1-SNAPSHOT.jar
 ```
 
-For the web UI, see [videopoker-ui/README.md](videopoker-ui/README.md) (`npm start` serves it at http://localhost:4200).
+For the web UI (Angular 22, Node 24 — `nvm use` picks it up from `.nvmrc`), see
+[videopoker-ui/README.md](videopoker-ui/README.md); `npm start` serves it at http://localhost:4200.
 
 New Game
 ```bash
