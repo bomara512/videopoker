@@ -14,9 +14,11 @@ describe('App', () => {
 
   const mockGame = signal<Game | null>(null);
   const mockPayouts = signal<Payout[]>([]);
+  const mockHolds = signal<number[]>([]);
   const mockGameService = {
     game: mockGame,
     payoutSchedule: mockPayouts,
+    holds: mockHolds,
     createGame: vi.fn(),
     deal: vi.fn(),
     draw: vi.fn(),
@@ -30,6 +32,7 @@ describe('App', () => {
     vi.clearAllMocks();
     mockGame.set(null);
     mockPayouts.set([]);
+    mockHolds.set([]);
 
     await TestBed.configureTestingModule({
       imports: [App],
@@ -102,19 +105,8 @@ describe('App', () => {
     expect(mockGameService.deal).toHaveBeenCalled();
   });
 
-  it('draws with the current holds', () => {
-    component.holdsChangedHandler([0, 2, 4]);
+  it('draws via the game service', () => {
     component.draw();
-    expect(mockGameService.draw).toHaveBeenCalledWith([0, 2, 4]);
-  });
-
-  it('resets holds on every game update (stale-holds bugfix)', async () => {
-    component.holdsChangedHandler([0, 2, 4]);
-
-    mockGame.set({...game});
-    await fixture.whenStable();
-
-    component.draw();
-    expect(mockGameService.draw).toHaveBeenCalledWith([]);
+    expect(mockGameService.draw).toHaveBeenCalledWith();
   });
 });

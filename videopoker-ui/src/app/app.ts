@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, OnInit} from '@angular/core';
+import {Component, computed, inject, OnInit} from '@angular/core';
 import {GameService} from './game-service';
 import {Hand} from './hand/hand';
 
@@ -17,16 +17,6 @@ export class App implements OnInit {
   protected readonly credits = computed(() => this.gameService.game()?.credits ?? 0);
   protected readonly bet = computed(() => this.gameService.game()?.bet ?? 0);
 
-  private holds: number[] = [];
-
-  constructor() {
-    // Reset alongside Hand's own reset so a later draw can't send stale holds.
-    effect(() => {
-      this.gameService.game();
-      this.holds = [];
-    });
-  }
-
   ngOnInit(): void {
     this.gameService.createGame();
   }
@@ -44,10 +34,6 @@ export class App implements OnInit {
   }
 
   draw(): void {
-    this.gameService.draw(this.holds);
-  }
-
-  holdsChangedHandler(holds: number[]): void {
-    this.holds = holds;
+    this.gameService.draw();
   }
 }

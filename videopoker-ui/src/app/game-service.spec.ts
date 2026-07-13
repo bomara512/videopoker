@@ -50,18 +50,6 @@ describe('GameService', () => {
     expect(service.game()).toEqual(dealt);
   });
 
-  it('draws new cards with holds', () => {
-    service.game.set(game);
-
-    service.draw([1, 2, 3]);
-
-    const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,2,3');
-    expect(req.request.method).toEqual('PUT');
-    req.flush(game);
-
-    expect(service.game()).toEqual(game);
-  });
-
   it('sets the current bet', () => {
     service.game.set(game);
 
@@ -73,5 +61,49 @@ describe('GameService', () => {
     req.flush(betGame);
 
     expect(service.game()).toEqual(betGame);
+  });
+
+  describe('holds', () => {
+    it('toggles holds preserving selection order', () => {
+      service.toggleHold(0);
+      service.toggleHold(2);
+      service.toggleHold(4);
+      expect(service.holds()).toEqual([0, 2, 4]);
+
+      service.toggleHold(2);
+      expect(service.holds()).toEqual([0, 4]);
+    });
+
+    it('draws with the current holds', () => {
+      service.game.set(game);
+      service.toggleHold(1);
+      service.toggleHold(3);
+
+      service.draw();
+
+      const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,3');
+      expect(req.request.method).toEqual('PUT');
+      req.flush(game);
+    });
+
+    it('draws with no holds when none selected', () => {
+      service.game.set(game);
+
+      service.draw();
+
+      const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=');
+      req.flush(game);
+    });
+
+    it('resets holds on every game update (stale-holds regression)', () => {
+      service.game.set(game);
+      service.toggleHold(0);
+      service.toggleHold(2);
+
+      service.deal();
+      httpMock.expectOne('http://localhost:8080/game/123/deal').flush(game);
+
+      expect(service.holds()).toEqual([]);
+    });
   });
 });
