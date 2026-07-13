@@ -5,18 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 
 Video poker game with two modules:
-- `videopoker-api` — Spring Boot 2.3 (Java 11) REST backend, game state stored in Redis
+- `videopoker-api` — Spring Boot 4.1 (Java 25) REST backend, game state stored in Redis
 - `videopoker-ui` — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)
 
 ## Commands
 
 ### Backend (from repo root)
 
-The build requires an older JDK: Gradle 6.3 and the Spring Boot 2.3-era Lombok fail on modern JVMs (e.g. Java 25 throws `IllegalAccessError` in `LombokProcessor`). Use a Java 11–13 JDK, e.g.:
-
-```bash
-export JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home
-```
+The build declares a Java 25 toolchain — any JDK 17+ can launch Gradle and it will locate/download JDK 25 itself.
 
 ```bash
 ./gradlew                      # default tasks: clean, test, integrationTest
@@ -26,14 +22,14 @@ export JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home
 ./gradlew :videopoker-api:test --tests "GameServiceTest.methodName"        # single test method
 ```
 
-Tests do **not** need Docker: `TestRedisConfiguration` starts an embedded Redis on port 6370 (set in `src/test/resources/application.properties`). Integration tests must live under the `net.bitbucketlist.integration` package to be picked up by the `integrationTest` task.
+Tests need Docker: `GameControllerIT` starts a redis:alpine Testcontainer via `@ServiceConnection` (no port/property config). Pure unit tests (service, mapper, deck, scoring) run without it. Integration tests must live under the `net.bitbucketlist.integration` package to be picked up by the `integrationTest` task.
 
 ### Running the app locally
 
 Requires a real Redis on the default port 6379:
 
 ```bash
-cd videopoker-api && docker compose up -d    # or: ./gradlew composeUp
+cd videopoker-api && docker compose up -d
 ./gradlew :videopoker-api:bootRun            # API on http://localhost:8080
 ```
 
@@ -70,5 +66,5 @@ The UI hardcodes the API base URL `http://localhost:8080` in `src/app/game-servi
 
 ### Conventions
 
-- Lombok used throughout: `@RequiredArgsConstructor` + `@FieldDefaults(level = PRIVATE, makeFinal = true)` for Spring beans, `@Value` for immutable types, `@Data` for the entity.
+- Lombok used throughout: `@RequiredArgsConstructor` + `@FieldDefaults(level = PRIVATE, makeFinal = true)` for Spring beans, `@Value` for immutable types, `@Data` for the entity. DTOs are Java records.
 - Test builders live in `videopoker-api/src/test/java/.../builder/` (`GameEntityBuilder`, `GameDtoBuilder`); `TestPokerHands` provides canned hands for scoring tests.

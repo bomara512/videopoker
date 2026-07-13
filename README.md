@@ -4,7 +4,7 @@ Backend for simple game of video poker. Springboard to more ambitious multi-play
 
 Current state is rudimentary. Run locally with dockerized redis, and either the Angular UI (`videopoker-ui`) or curl.
 
-1. Install docker, curl, jq, and a Java 11–13 JDK (the Gradle 6.3 build fails on newer JVMs).
+1. Install docker, curl, jq, and a Java 17+ JDK (Java 25 recommended; the build's Gradle toolchain targets 25).
 2. `> docker compose -f videopoker-api/docker-compose.yml up -d`
 3. `> ./gradlew :videopoker-api:bootRun`
 
