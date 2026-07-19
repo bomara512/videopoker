@@ -2,6 +2,8 @@
 
 Backend for a simple poker game. Springboard to more ambitious multi-player card games.
 
+AI only used for significant framework upgrades: Angular 11 → 22 (Node 12 → 24) and Spring Boot 2.3.4 → 4.1 (Java 11 → 25, Gradle 6.3 → 9.6.1).
+
 Current state is rudimentary. Run locally with dockerized redis, and either the Angular UI (`poker-ui`) or curl.
 
 1. Install docker, curl, jq, and a Java 17+ JDK (Java 25 recommended; the build's Gradle toolchain targets 25).
