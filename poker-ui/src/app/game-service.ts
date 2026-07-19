@@ -2,8 +2,6 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Game, Payout} from './game';
 
-const REST_API_SERVER = 'http://localhost:8080';
-
 @Injectable({providedIn: 'root'})
 export class GameService {
   private readonly httpClient = inject(HttpClient);
@@ -14,9 +12,9 @@ export class GameService {
   readonly errorMessage = signal<string | null>(null);
 
   createGame(): void {
-    this.httpClient.post<Game>(`${REST_API_SERVER}/game`, null)
+    this.httpClient.post<Game>('/game', null)
       .subscribe({next: game => this.updateGame(game), error: err => this.handleError(err)});
-    this.httpClient.get<Payout[]>(`${REST_API_SERVER}/game/payout-schedule`)
+    this.httpClient.get<Payout[]>('/game/payout-schedule')
       .subscribe({next: payouts => this.payoutSchedule.set(payouts), error: err => this.handleError(err)});
   }
 
@@ -58,6 +56,6 @@ export class GameService {
   }
 
   private gameUrl(): string {
-    return `${REST_API_SERVER}/game/${this.game()!.id}`;
+    return `/game/${this.game()!.id}`;
   }
 }

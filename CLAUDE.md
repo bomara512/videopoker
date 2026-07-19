@@ -44,7 +44,7 @@ npm run e2e      # Playwright; starts ng serve itself, needs backend + Redis run
 npm run build    # ng build
 ```
 
-The UI hardcodes the API base URL `http://localhost:8080` in `src/app/game-service.ts`; the controller has an open `@CrossOrigin` to allow this. Game and payout-schedule state are held in `GameService` signals (`game`, `payoutSchedule`, `holds`, `errorMessage`).
+The UI calls the API with relative `/game` URLs; `ng serve` proxies them to the backend via `proxy.conf.mjs`, which reads `SERVER_PORT` (default 8080) — the same env var Spring Boot uses for its listen port, so setting it once moves both sides (e.g. `SERVER_PORT=8081 ./gradlew :poker-api:bootRun` and `SERVER_PORT=8081 npm start`). No CORS config is needed since browser traffic is same-origin. Game and payout-schedule state are held in `GameService` signals (`game`, `payoutSchedule`, `holds`, `errorMessage`).
 
 ## Architecture
 

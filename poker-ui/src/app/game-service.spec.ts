@@ -25,11 +25,11 @@ describe('GameService', () => {
   it('creates a game and loads the payout schedule', () => {
     service.createGame();
 
-    const req = httpMock.expectOne('http://localhost:8080/game');
+    const req = httpMock.expectOne('/game');
     expect(req.request.method).toEqual('POST');
     req.flush(game);
 
-    const req2 = httpMock.expectOne('http://localhost:8080/game/payout-schedule');
+    const req2 = httpMock.expectOne('/game/payout-schedule');
     expect(req2.request.method).toEqual('GET');
     req2.flush(payoutSchedule);
 
@@ -42,7 +42,7 @@ describe('GameService', () => {
 
     service.deal();
 
-    const req = httpMock.expectOne('http://localhost:8080/game/123/deal');
+    const req = httpMock.expectOne('/game/123/deal');
     expect(req.request.method).toEqual('PUT');
     const dealt: Game = {...game, gameState: 'READY_TO_DRAW'};
     req.flush(dealt);
@@ -55,7 +55,7 @@ describe('GameService', () => {
 
     service.bet(3);
 
-    const req = httpMock.expectOne('http://localhost:8080/game/123/bet?amount=3');
+    const req = httpMock.expectOne('/game/123/bet?amount=3');
     expect(req.request.method).toEqual('PUT');
     const betGame: Game = {...game, bet: 3};
     req.flush(betGame);
@@ -81,7 +81,7 @@ describe('GameService', () => {
 
       service.draw();
 
-      const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,3');
+      const req = httpMock.expectOne('/game/123/draw?holds=1,3');
       expect(req.request.method).toEqual('PUT');
       req.flush(game);
     });
@@ -91,7 +91,7 @@ describe('GameService', () => {
 
       service.draw();
 
-      const req = httpMock.expectOne('http://localhost:8080/game/123/draw?holds=');
+      const req = httpMock.expectOne('/game/123/draw?holds=');
       req.flush(game);
     });
 
@@ -101,7 +101,7 @@ describe('GameService', () => {
       service.toggleHold(2);
 
       service.deal();
-      httpMock.expectOne('http://localhost:8080/game/123/deal').flush(game);
+      httpMock.expectOne('/game/123/deal').flush(game);
 
       expect(service.holds()).toEqual([]);
     });
@@ -112,7 +112,7 @@ describe('GameService', () => {
       service.game.set(game);
 
       service.deal();
-      httpMock.expectOne('http://localhost:8080/game/123/deal')
+      httpMock.expectOne('/game/123/deal')
         .flush({message: 'Not enough credits'}, {status: 400, statusText: 'Bad Request'});
 
       expect(service.errorMessage()).toEqual('Not enough credits');
@@ -122,7 +122,7 @@ describe('GameService', () => {
       service.game.set(game);
 
       service.bet(3);
-      httpMock.expectOne('http://localhost:8080/game/123/bet?amount=3')
+      httpMock.expectOne('/game/123/bet?amount=3')
         .flush(null, {status: 500, statusText: 'Server Error'});
 
       expect(service.errorMessage()).toEqual('Something went wrong talking to the server');
@@ -133,7 +133,7 @@ describe('GameService', () => {
       service.errorMessage.set('stale error');
 
       service.deal();
-      httpMock.expectOne('http://localhost:8080/game/123/deal').flush(game);
+      httpMock.expectOne('/game/123/deal').flush(game);
 
       expect(service.errorMessage()).toBeNull();
     });
@@ -150,7 +150,7 @@ describe('GameService', () => {
       service.toggleHold(3);
 
       service.draw();
-      httpMock.expectOne('http://localhost:8080/game/123/draw?holds=1,3')
+      httpMock.expectOne('/game/123/draw?holds=1,3')
         .flush({message: 'boom'}, {status: 400, statusText: 'Bad Request'});
 
       expect(service.holds()).toEqual([1, 3]);

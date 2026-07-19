@@ -4,8 +4,15 @@ Angular 22 frontend for Poker. Requires Node 24 (`.nvmrc` — run `nvm use`).
 
 ## Development server
 
-`npm start` serves the app at http://localhost:4200. It expects the backend API
-at http://localhost:8080 (see the root README for running it).
+`npm start` serves the app at http://localhost:4200 and proxies API calls
+(`/game/**`) to the backend (see the root README for running it). The backend
+port defaults to 8080; to use another port, set `SERVER_PORT` for both
+processes — it's the same variable Spring Boot reads:
+
+```bash
+SERVER_PORT=8081 ./gradlew :poker-api:bootRun
+SERVER_PORT=8081 npm start
+```
 
 ## Unit tests
 
