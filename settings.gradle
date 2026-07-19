@@ -2,5 +2,5 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
-rootProject.name = 'videopoker'
-include 'videopoker-api', 'videopoker-ui'
+rootProject.name = 'poker'
+include 'poker-api', 'poker-ui'

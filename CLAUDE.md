@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Video poker game with two modules:
-- `videopoker-api` — Spring Boot 4.1 (Java 25) REST backend, game state stored in Redis
-- `videopoker-ui` — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)
+Poker game with two modules:
+- `poker-api` — Spring Boot 4.1 (Java 25) REST backend, game state stored in Redis
+- `poker-ui` — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)
 
 ## Commands
 
@@ -18,8 +18,8 @@ The build declares a Java 25 toolchain with the foojay resolver — any JDK 17+ 
 ./gradlew                      # default tasks: clean, test, integrationTest
 ./gradlew test                 # unit tests only (excludes **/integration/**)
 ./gradlew integrationTest      # integration tests only (src/test/java/net/bitbucketlist/integration/)
-./gradlew :videopoker-api:test --tests "GameServiceTest"                    # single test class
-./gradlew :videopoker-api:test --tests "GameServiceTest.methodName"        # single test method
+./gradlew :poker-api:test --tests "GameServiceTest"                    # single test class
+./gradlew :poker-api:test --tests "GameServiceTest.methodName"        # single test method
 ```
 
 Tests need Docker: `GameControllerIT` starts a redis:alpine Testcontainer via `@ServiceConnection` (no port/property config). Pure unit tests (service, mapper, deck, scoring) run without it. Integration tests must live under the `net.bitbucketlist.integration` package to be picked up by the `integrationTest` task.
@@ -29,11 +29,11 @@ Tests need Docker: `GameControllerIT` starts a redis:alpine Testcontainer via `@
 Requires a real Redis on the default port 6379:
 
 ```bash
-cd videopoker-api && docker compose up -d
-./gradlew :videopoker-api:bootRun            # API on http://localhost:8080
+cd poker-api && docker compose up -d
+./gradlew :poker-api:bootRun            # API on http://localhost:8080
 ```
 
-### Frontend (from videopoker-ui/)
+### Frontend (from poker-ui/)
 
 Requires Node 24: `nvm use` (reads `.nvmrc`).
 
@@ -67,4 +67,4 @@ The UI hardcodes the API base URL `http://localhost:8080` in `src/app/game-servi
 ### Conventions
 
 - Lombok used throughout: `@RequiredArgsConstructor` + `@FieldDefaults(level = PRIVATE, makeFinal = true)` for Spring beans, `@Value` for immutable types, `@Data` for the entity. DTOs are Java records.
-- Test builders live in `videopoker-api/src/test/java/.../builder/` (`GameEntityBuilder`, `GameDtoBuilder`); `TestPokerHands` provides canned hands for scoring tests.
+- Test builders live in `poker-api/src/test/java/.../builder/` (`GameEntityBuilder`, `GameDtoBuilder`); `TestPokerHands` provides canned hands for scoring tests.

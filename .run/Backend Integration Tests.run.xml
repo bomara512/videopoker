@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Backend Integration Tests" type="JUnit" factoryName="JUnit">
-    <module name="videopoker.videopoker-api.test" />
+    <module name="poker.poker-api.test" />
     <option name="PACKAGE_NAME" value="net.bitbucketlist.integration" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />

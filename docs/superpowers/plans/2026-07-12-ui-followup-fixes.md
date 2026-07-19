@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Node 24 must be active for every npm/ng command: `export PATH="$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node" | grep '^v24' | sort -V | tail -1)/bin:$PATH"`.
-- Game behavior visible to the player is unchanged except the new error alert. The 16-test Playwright suite must pass unmodified after each task (backend + Redis required: `docker compose -f videopoker-api/docker-compose.yml up -d`, then `JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home ./gradlew :videopoker-api:bootRun` in background until "Started VideoPokerApplication").
+- Game behavior visible to the player is unchanged except the new error alert. The 16-test Playwright suite must pass unmodified after each task (backend + Redis required: `docker compose -f poker-api/docker-compose.yml up -d`, then `JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home ./gradlew :poker-api:bootRun` in background until "Started PokerApplication").
 - All work on branch `fix/ui-followups` off master. Never push. Commit messages end with `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 - E2E CSS hook classes must survive: `game`, `payout`, `hand`, `bestHand`, `dealButton`, `drawButton`, `holdButton`, `betOneButton`, `betMaxButton`. New hook for the alert: `errorMessage`.
 - Out of scope (do NOT touch): backend module, dev-server proxy/environment config, `gameUrl()` non-null guard, `handRank` type cosmetics — all triaged leave-as-is; backend stack upgrade is a separate future project.
@@ -23,11 +23,11 @@
 ### Task 1: Holds single source of truth in GameService
 
 **Files:**
-- Modify: `videopoker-ui/src/app/game-service.ts`
-- Modify: `videopoker-ui/src/app/hand/hand.ts`
-- Modify: `videopoker-ui/src/app/app.ts`
-- Modify: `videopoker-ui/src/app/app.html` (one line)
-- Test: `videopoker-ui/src/app/game-service.spec.ts`, `videopoker-ui/src/app/hand/hand.spec.ts`, `videopoker-ui/src/app/app.spec.ts`
+- Modify: `poker-ui/src/app/game-service.ts`
+- Modify: `poker-ui/src/app/hand/hand.ts`
+- Modify: `poker-ui/src/app/app.ts`
+- Modify: `poker-ui/src/app/app.html` (one line)
+- Test: `poker-ui/src/app/game-service.spec.ts`, `poker-ui/src/app/hand/hand.spec.ts`, `poker-ui/src/app/app.spec.ts`
 
 **Interfaces:**
 - Consumes: existing `GameService` (`game`/`payoutSchedule` signals; `createGame()`, `deal()`, `draw(holds: number[])`, `bet(amount)`), `Hand` (`holdsChanged` output, `holds` signal), `App` (`holdsChangedHandler`, private `holds` field, reset effect).
@@ -149,7 +149,7 @@ describe('GameService', () => {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `cd videopoker-ui && npm test`
+Run: `cd poker-ui && npm test`
 Expected: FAIL — `toggleHold` does not exist; `draw()` expects an argument.
 
 - [ ] **Step 3: Implement GameService changes** — replace `src/app/game-service.ts` with:
@@ -414,11 +414,11 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 2: Surface backend errors as a dismissible alert
 
 **Files:**
-- Modify: `videopoker-ui/src/app/game-service.ts`
-- Modify: `videopoker-ui/src/app/app.ts`
-- Modify: `videopoker-ui/src/app/app.html`
+- Modify: `poker-ui/src/app/game-service.ts`
+- Modify: `poker-ui/src/app/app.ts`
+- Modify: `poker-ui/src/app/app.html`
 - Modify: `CLAUDE.md` (one line)
-- Test: `videopoker-ui/src/app/game-service.spec.ts`, `videopoker-ui/src/app/app.spec.ts`
+- Test: `poker-ui/src/app/game-service.spec.ts`, `poker-ui/src/app/app.spec.ts`
 
 **Interfaces:**
 - Consumes: Task 1's `GameService` (`updateGame` private helper, `game`/`holds` signals, `draw()` no-arg).

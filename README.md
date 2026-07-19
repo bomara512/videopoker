@@ -1,21 +1,21 @@
-# ♥ ♠ VideoPoker ♣ ♦
+# ♥ ♠ Poker ♣ ♦
 
-Backend for simple game of video poker. Springboard to more ambitious multi-player card games.
+Backend for a simple poker game. Springboard to more ambitious multi-player card games.
 
-Current state is rudimentary. Run locally with dockerized redis, and either the Angular UI (`videopoker-ui`) or curl.
+Current state is rudimentary. Run locally with dockerized redis, and either the Angular UI (`poker-ui`) or curl.
 
 1. Install docker, curl, jq, and a Java 17+ JDK (Java 25 recommended; the build's Gradle toolchain targets 25).
-2. `> docker compose -f videopoker-api/docker-compose.yml up -d`
-3. `> ./gradlew :videopoker-api:bootRun`
+2. `> docker compose -f poker-api/docker-compose.yml up -d`
+3. `> ./gradlew :poker-api:bootRun`
 
 Or run the built jar instead of `bootRun`:
 
 ```bash
-> ./gradlew build && java -jar videopoker-api/build/libs/videopoker-api-0.0.1-SNAPSHOT.jar
+> ./gradlew build && java -jar poker-api/build/libs/poker-api-0.0.1-SNAPSHOT.jar
 ```
 
 For the web UI (Angular 22, Node 24 — `nvm use` picks it up from `.nvmrc`), see
-[videopoker-ui/README.md](videopoker-ui/README.md); `npm start` serves it at http://localhost:4200.
+[poker-ui/README.md](poker-ui/README.md); `npm start` serves it at http://localhost:4200.
 
 New Game
 ```bash

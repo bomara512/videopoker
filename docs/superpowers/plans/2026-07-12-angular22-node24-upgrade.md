@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the Angular 11 / Node 12 `videopoker-ui` with a fresh Angular 22 workspace on Node 24 LTS, porting all app code, unit tests, and e2e tests to modern idioms with identical game behavior.
+**Goal:** Replace the Angular 11 / Node 12 `poker-ui` with a fresh Angular 22 workspace on Node 24 LTS, porting all app code, unit tests, and e2e tests to modern idioms with identical game behavior.
 
-**Architecture:** Fresh `ng new` scaffold replaces `videopoker-ui/` contents in place. Three app units port 1:1 — `game.ts` (interfaces), `GameService` (signals instead of RxJS Subject), `App`/`Hand` standalone components (`inject()`, `computed()`, `output()`, `@if`/`@for`). Unit tests move Jasmine/Karma → Vitest; e2e moves Protractor → Playwright.
+**Architecture:** Fresh `ng new` scaffold replaces `poker-ui/` contents in place. Three app units port 1:1 — `game.ts` (interfaces), `GameService` (signals instead of RxJS Subject), `App`/`Hand` standalone components (`inject()`, `computed()`, `output()`, `@if`/`@for`). Unit tests move Jasmine/Karma → Vitest; e2e moves Protractor → Playwright.
 
 **Tech Stack:** Angular 22.0.x, Node 24 LTS (nvm), Bootstrap 5.3 (CSS only), Vitest (Angular unit-test builder), Playwright.
 
@@ -12,21 +12,21 @@
 
 ## Global Constraints
 
-- Node 24 LTS, pinned via `videopoker-ui/.nvmrc`. Every npm/ng/npx command in this plan must run with Node 24 active: `export PATH="$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node" | grep '^v24' | sort -V | tail -1)/bin:$PATH"`.
+- Node 24 LTS, pinned via `poker-ui/.nvmrc`. Every npm/ng/npx command in this plan must run with Node 24 active: `export PATH="$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node" | grep '^v24' | sort -V | tail -1)/bin:$PATH"`.
 - Angular 22.0.x. Latest stable as of 2026-07-12.
 - All work on branch `upgrade/angular22-node24`. Never push. Commit messages end with `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 - Behavior preservation (from spec): bet cycle 1→5 wraps to 1; Bet Max sets 5; holds are 0-based indexes, reset on every game update; card images `assets/cards/{RANK}_{SUIT}.png`; held card CSS class `held-playing-card`; hand rank shown only in `READY_TO_DEAL`; API base URL hardcoded `http://localhost:8080`.
 - CSS hook classes used by e2e must survive the port: `game`, `payout`, `hand`, `bestHand`, `dealButton`, `drawButton`, `holdButton`, `betOneButton`, `betMaxButton`.
 - **One deliberate bugfix** (approved deviation): today `App.holds` goes stale after a draw (Hand resets its copy, App keeps the old one, so the next draw can silently send old holds). The port resets App's holds on every game update, same as Hand. Covered by a unit test in Task 4.
-- The working directory for all commands is `videopoker-ui/` unless a path says otherwise.
+- The working directory for all commands is `poker-ui/` unless a path says otherwise.
 
 ---
 
-### Task 1: Node 24 toolchain + fresh Angular 22 scaffold replacing videopoker-ui in place
+### Task 1: Node 24 toolchain + fresh Angular 22 scaffold replacing poker-ui in place
 
 **Files:**
-- Replace: entire contents of `videopoker-ui/` with `ng new` output
-- Create: `videopoker-ui/.nvmrc`
+- Replace: entire contents of `poker-ui/` with `ng new` output
+- Create: `poker-ui/.nvmrc`
 - Preserve: `src/assets/cards/*.png` (55 files) → `public/assets/cards/`, `src/favicon.ico` → `public/favicon.ico`
 - Delete (via replacement): `e2e/` (Protractor), `tslint.json`, `karma.conf.js`, `src/test.ts`, `src/polyfills.ts`, old `angular.json`/tsconfigs/`package.json`/`package-lock.json`
 
@@ -37,7 +37,7 @@
 - [ ] **Step 1: Create the branch**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
 git checkout -b upgrade/angular22-node24
 ```
 
@@ -53,36 +53,36 @@ node --version   # Expected: v24.x.x
 
 ```bash
 cd "$SCRATCHPAD"   # the session scratchpad dir; any temp dir outside the repo works
-npx -y @angular/cli@22 new videopoker-ui --style css --routing false --ssr false --zoneless --skip-git --package-manager npm --defaults
+npx -y @angular/cli@22 new poker-ui --style css --routing false --ssr false --zoneless --skip-git --package-manager npm --defaults
 ```
 
 Expected: scaffold completes, `npm install` runs. Verify the pieces we rely on:
 
 ```bash
-node -p "require('./videopoker-ui/package.json').dependencies['@angular/core']"   # Expected: ^22.x
-grep -o '"builder": "[^"]*unit-test[^"]*"' videopoker-ui/angular.json             # Expected: @angular/build:unit-test (Vitest builder)
-ls videopoker-ui/public                                                            # Expected: favicon.ico
+node -p "require('./poker-ui/package.json').dependencies['@angular/core']"   # Expected: ^22.x
+grep -o '"builder": "[^"]*unit-test[^"]*"' poker-ui/angular.json             # Expected: @angular/build:unit-test (Vitest builder)
+ls poker-ui/public                                                            # Expected: favicon.ico
 ```
 
 If `ng new` prompts or flags differ (flag names occasionally change between majors), adapt but do not proceed without: css styles, no routing, no SSR, zoneless, Vitest unit-test builder. If the scaffold generated Karma instead of Vitest, stop and re-scaffold with the test-runner flag for v22 (`--test-runner vitest` or check `ng new --help`).
 
-- [ ] **Step 4: Preserve assets, replace videopoker-ui contents**
+- [ ] **Step 4: Preserve assets, replace poker-ui contents**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
-mkdir -p "$SCRATCHPAD/keep" && cp -R videopoker-ui/src/assets/cards "$SCRATCHPAD/keep/cards" && cp videopoker-ui/src/favicon.ico "$SCRATCHPAD/keep/favicon.ico"
-find videopoker-ui -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-cp -R "$SCRATCHPAD"/videopoker-ui/. videopoker-ui/
-mkdir -p videopoker-ui/public/assets && cp -R "$SCRATCHPAD/keep/cards" videopoker-ui/public/assets/cards
-cp "$SCRATCHPAD/keep/favicon.ico" videopoker-ui/public/favicon.ico
-echo "24" > videopoker-ui/.nvmrc
-ls videopoker-ui/public/assets/cards | wc -l   # Expected: 55
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
+mkdir -p "$SCRATCHPAD/keep" && cp -R poker-ui/src/assets/cards "$SCRATCHPAD/keep/cards" && cp poker-ui/src/favicon.ico "$SCRATCHPAD/keep/favicon.ico"
+find poker-ui -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+cp -R "$SCRATCHPAD"/poker-ui/. poker-ui/
+mkdir -p poker-ui/public/assets && cp -R "$SCRATCHPAD/keep/cards" poker-ui/public/assets/cards
+cp "$SCRATCHPAD/keep/favicon.ico" poker-ui/public/favicon.ico
+echo "24" > poker-ui/.nvmrc
+ls poker-ui/public/assets/cards | wc -l   # Expected: 55
 ```
 
 - [ ] **Step 5: Add Bootstrap 5.3 CSS**
 
 ```bash
-cd videopoker-ui && npm install bootstrap@5
+cd poker-ui && npm install bootstrap@5
 ```
 
 In `angular.json`, add Bootstrap to the build styles array (project → architect → build → options → styles):
@@ -98,7 +98,7 @@ Also apply the same styles array to the `test` target if it has its own styles o
 
 - [ ] **Step 6: Set the page title**
 
-In `src/index.html`, set `<title>VideoPoker</title>` (old title was `VideopokerUi`; keep everything else the scaffold generated).
+In `src/index.html`, set `<title>Poker</title>` (old title was `PokerUi`; keep everything else the scaffold generated).
 
 - [ ] **Step 7: Verify build and default test pass**
 
@@ -110,8 +110,8 @@ npm test         # Expected: Vitest runs scaffold's app.spec.ts, all green
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
-git add -A videopoker-ui
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
+git add -A poker-ui
 git commit -m "Replace Angular 11 workspace with fresh Angular 22 scaffold
 
 Fresh ng new (standalone, zoneless, Vitest) on Node 24 LTS (.nvmrc).
@@ -126,9 +126,9 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 2: Port game model and GameService to signals (with Vitest spec)
 
 **Files:**
-- Create: `videopoker-ui/src/app/game.ts`
-- Create: `videopoker-ui/src/app/game-service.ts`
-- Test: `videopoker-ui/src/app/game-service.spec.ts`
+- Create: `poker-ui/src/app/game.ts`
+- Create: `poker-ui/src/app/game-service.ts`
+- Test: `poker-ui/src/app/game-service.spec.ts`
 
 **Interfaces:**
 - Consumes: `provideHttpClient()` (wired into app config in Task 4; tests provide their own).
@@ -249,7 +249,7 @@ describe('GameService', () => {
 - [ ] **Step 3: Run the spec to verify it fails**
 
 ```bash
-cd videopoker-ui && npm test
+cd poker-ui && npm test
 ```
 
 Expected: FAIL — cannot resolve `./game-service`.
@@ -320,10 +320,10 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 3: Port Hand component
 
 **Files:**
-- Create: `videopoker-ui/src/app/hand/hand.ts`
-- Create: `videopoker-ui/src/app/hand/hand.html`
-- Create: `videopoker-ui/src/app/hand/hand.css`
-- Test: `videopoker-ui/src/app/hand/hand.spec.ts`
+- Create: `poker-ui/src/app/hand/hand.ts`
+- Create: `poker-ui/src/app/hand/hand.html`
+- Create: `poker-ui/src/app/hand/hand.css`
+- Test: `poker-ui/src/app/hand/hand.spec.ts`
 
 **Interfaces:**
 - Consumes: `GameService.game` signal (Task 2).
@@ -552,11 +552,11 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 4: Port App root component and bootstrap wiring
 
 **Files:**
-- Modify: `videopoker-ui/src/app/app.ts` (replace scaffold content)
-- Modify: `videopoker-ui/src/app/app.html` (replace scaffold content)
-- Modify: `videopoker-ui/src/app/app.css` (empty, like the old `app.component.css`)
-- Modify: `videopoker-ui/src/app/app.config.ts` (add `provideHttpClient()`)
-- Test: `videopoker-ui/src/app/app.spec.ts` (replace scaffold spec)
+- Modify: `poker-ui/src/app/app.ts` (replace scaffold content)
+- Modify: `poker-ui/src/app/app.html` (replace scaffold content)
+- Modify: `poker-ui/src/app/app.css` (empty, like the old `app.component.css`)
+- Modify: `poker-ui/src/app/app.config.ts` (add `provideHttpClient()`)
+- Test: `poker-ui/src/app/app.spec.ts` (replace scaffold spec)
 
 **Interfaces:**
 - Consumes: `GameService` signals + methods (Task 2); `Hand` component with `holdsChanged` output (Task 3).
@@ -845,10 +845,10 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 5: Playwright e2e suite
 
 **Files:**
-- Create: `videopoker-ui/playwright.config.ts`
-- Create: `videopoker-ui/e2e/videopoker.spec.ts`
-- Modify: `videopoker-ui/package.json` (add `e2e` script, Playwright dev dep)
-- Modify: `videopoker-ui/.gitignore` (add `/playwright-report/`, `/test-results/`)
+- Create: `poker-ui/playwright.config.ts`
+- Create: `poker-ui/e2e/poker.spec.ts`
+- Modify: `poker-ui/package.json` (add `e2e` script, Playwright dev dep)
+- Modify: `poker-ui/.gitignore` (add `/playwright-report/`, `/test-results/`)
 
 **Interfaces:**
 - Consumes: the running app (Task 4) and the real backend at `http://localhost:8080` (docker Redis + bootRun).
@@ -857,7 +857,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Install Playwright**
 
 ```bash
-cd videopoker-ui
+cd poker-ui
 npm install -D @playwright/test
 npx playwright install chromium
 ```
@@ -883,7 +883,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 3: Write the e2e suite** (`e2e/videopoker.spec.ts`)
+- [ ] **Step 3: Write the e2e suite** (`e2e/poker.spec.ts`)
 
 Faithful port of the Protractor flow: one browser page across the whole serial suite, state accumulating New Game → Deal → Draw. Requires the backend (see Step 4).
 
@@ -1024,16 +1024,16 @@ Add to `package.json` scripts: `"e2e": "playwright test"`.
 - [ ] **Step 4: Start the backend and run e2e**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
-docker compose -f videopoker-api/docker-compose.yml up -d
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
+docker compose -f poker-api/docker-compose.yml up -d
 export JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home
-./gradlew :videopoker-api:bootRun   # run in background; wait for "Started VideoPokerApplication"
+./gradlew :poker-api:bootRun   # run in background; wait for "Started PokerApplication"
 ```
 
 Then:
 
 ```bash
-cd videopoker-ui && npm run e2e
+cd poker-ui && npm run e2e
 ```
 
 Expected: 16 tests pass. Each run needs a fresh page load (the suite creates its own game via `page.goto`), so re-runs are safe. Stop bootRun and `docker compose down` afterwards if you started them.
@@ -1052,7 +1052,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 6: Documentation and final verification
 
 **Files:**
-- Modify: `videopoker-ui/README.md`
+- Modify: `poker-ui/README.md`
 - Modify: `README.md` (root)
 - Modify: `CLAUDE.md`
 
@@ -1060,12 +1060,12 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - Consumes: everything above, finished and green.
 - Produces: docs matching the new reality.
 
-- [ ] **Step 1: Rewrite `videopoker-ui/README.md`**
+- [ ] **Step 1: Rewrite `poker-ui/README.md`**
 
 ```markdown
-# VideopokerUi
+# PokerUi
 
-Angular 22 frontend for VideoPoker. Requires Node 24 (`.nvmrc` — run `nvm use`).
+Angular 22 frontend for Poker. Requires Node 24 (`.nvmrc` — run `nvm use`).
 
 ## Development server
 
@@ -1091,24 +1091,24 @@ the backend + Redis must already be running.
 Replace the UI sentence added earlier:
 
 ```markdown
-For the web UI, see [videopoker-ui/README.md](videopoker-ui/README.md) (`npm start` serves it at http://localhost:4200).
+For the web UI, see [poker-ui/README.md](poker-ui/README.md) (`npm start` serves it at http://localhost:4200).
 ```
 
 with:
 
 ```markdown
 For the web UI (Angular 22, Node 24 — `nvm use` picks it up from `.nvmrc`), see
-[videopoker-ui/README.md](videopoker-ui/README.md); `npm start` serves it at http://localhost:4200.
+[poker-ui/README.md](poker-ui/README.md); `npm start` serves it at http://localhost:4200.
 ```
 
 - [ ] **Step 3: Update `CLAUDE.md`**
 
-Update the Overview line for the UI module to `videopoker-ui — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)`.
+Update the Overview line for the UI module to `poker-ui — Angular 22 frontend (Node 24 via .nvmrc; built with npm, not Gradle)`.
 
-Replace the "Frontend (from videopoker-ui/)" commands section with:
+Replace the "Frontend (from poker-ui/)" commands section with:
 
 ```markdown
-### Frontend (from videopoker-ui/)
+### Frontend (from poker-ui/)
 
 Requires Node 24: `nvm use` (reads `.nvmrc`).
 
@@ -1125,7 +1125,7 @@ Also update the architecture note about the UI hardcoding `http://localhost:8080
 - [ ] **Step 4: Final full verification**
 
 ```bash
-cd videopoker-ui
+cd poker-ui
 npm run build   # PASS
 npm test        # PASS (20 unit tests)
 npm run e2e     # PASS (16 tests, backend running as in Task 5 Step 4)
@@ -1134,8 +1134,8 @@ npm run e2e     # PASS (16 tests, backend running as in Task 5 Step 4)
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
-git add README.md CLAUDE.md videopoker-ui/README.md
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
+git add README.md CLAUDE.md poker-ui/README.md
 git commit -m "Update docs for Angular 22 / Node 24 UI
 
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"

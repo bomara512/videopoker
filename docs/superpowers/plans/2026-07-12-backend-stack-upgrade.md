@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Direct-jump `videopoker-api` from Java 11 / Gradle 6.3 / Spring Boot 2.3.4 to Java 25 / Gradle 9.6.1 / Spring Boot 4.1.0 with Testcontainers replacing the abandoned embedded-redis, preserving API behavior exactly.
+**Goal:** Direct-jump `poker-api` from Java 11 / Gradle 6.3 / Spring Boot 2.3.4 to Java 25 / Gradle 9.6.1 / Spring Boot 4.1.0 with Testcontainers replacing the abandoned embedded-redis, preserving API behavior exactly.
 
 **Architecture:** One toolchain/build rewrite, then fix-forward: main code compiles almost unchanged (the only `javax.*` usage lives in test config being deleted), tests move to Testcontainers, DTOs become records last (gated by the green suite). The unmodified 16-test Playwright e2e suite is the final behavior proof.
 
@@ -25,17 +25,17 @@
 
 **Files:**
 - Modify: `gradle/wrapper/gradle-wrapper.properties`, `gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar` (via the wrapper task — never hand-edit)
-- Modify: `videopoker-api/build.gradle` (full rewrite below)
+- Modify: `poker-api/build.gradle` (full rewrite below)
 - Unchanged: root `build.gradle` (`defaultTasks 'clean', 'test', 'integrationTest'`), `settings.gradle`
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: a Gradle 9.6.1 build where `./gradlew :videopoker-api:compileJava` and `./gradlew :videopoker-api:bootJar -x test` succeed on JDK 25 with Boot 4.1. Test compilation is expected to still FAIL (embedded-redis imports) — Task 2 fixes that; do not try to fix tests in this task.
+- Produces: a Gradle 9.6.1 build where `./gradlew :poker-api:compileJava` and `./gradlew :poker-api:bootJar -x test` succeed on JDK 25 with Boot 4.1. Test compilation is expected to still FAIL (embedded-redis imports) — Task 2 fixes that; do not try to fix tests in this task.
 
 - [ ] **Step 1: Create the branch**
 
 ```bash
-cd /Users/bomara/workspace/dev/videopoker-ai-refresh/videopoker
+cd /Users/bomara/workspace/dev/poker-ai-refresh/poker
 git checkout -b upgrade/spring-boot4-java25
 ```
 
@@ -49,7 +49,7 @@ JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home ./gradle
 
 Expected: `Gradle 9.6.1`, JVM shows 25.x. (First command needs the old JDK because Gradle 6.3 cannot start on JDK 25.)
 
-- [ ] **Step 3: Rewrite `videopoker-api/build.gradle`**
+- [ ] **Step 3: Rewrite `poker-api/build.gradle`**
 
 ```groovy
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
@@ -115,17 +115,17 @@ What's gone versus the old file, per spec: `io.spring.dependency-management` plu
 - [ ] **Step 4: Verify main code compiles and the boot jar builds**
 
 ```bash
-./gradlew :videopoker-api:compileJava
-./gradlew :videopoker-api:bootJar -x test
-ls videopoker-api/build/libs/    # Expected: videopoker-api-0.0.1-SNAPSHOT.jar
+./gradlew :poker-api:compileJava
+./gradlew :poker-api:bootJar -x test
+ls poker-api/build/libs/    # Expected: poker-api-0.0.1-SNAPSHOT.jar
 ```
 
-Expected: both succeed with zero source changes to `src/main` (no `javax.*` imports exist there). If `compileJava` reports missing Spring classes, an artifact name is off — resolve per Global Constraints. `./gradlew :videopoker-api:compileTestJava` is EXPECTED to fail (`redis.embedded` unresolved) — that is Task 2's work, not a defect in this task.
+Expected: both succeed with zero source changes to `src/main` (no `javax.*` imports exist there). If `compileJava` reports missing Spring classes, an artifact name is off — resolve per Global Constraints. `./gradlew :poker-api:compileTestJava` is EXPECTED to fail (`redis.embedded` unresolved) — that is Task 2's work, not a defect in this task.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add gradle gradlew gradlew.bat videopoker-api/build.gradle
+git add gradle gradlew gradlew.bat poker-api/build.gradle
 git commit -m "Upgrade build to Gradle 9.6.1 / Spring Boot 4.1 / Java 25 toolchain
 
 Drops jedis pin (Lettuce default), avast docker-compose plugin (unused),
@@ -140,9 +140,9 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 2: Testcontainers test infrastructure
 
 **Files:**
-- Delete: `videopoker-api/src/test/java/net/bitbucketlist/videopoker/TestRedisConfiguration.java`
-- Delete: `videopoker-api/src/test/resources/application.properties`
-- Modify: `videopoker-api/src/test/java/net/bitbucketlist/integration/GameControllerIT.java` (class header only; test methods unchanged)
+- Delete: `poker-api/src/test/java/net/bitbucketlist/poker/TestRedisConfiguration.java`
+- Delete: `poker-api/src/test/resources/application.properties`
+- Modify: `poker-api/src/test/java/net/bitbucketlist/integration/GameControllerIT.java` (class header only; test methods unchanged)
 
 **Interfaces:**
 - Consumes: Task 1's build (Testcontainers deps on the test classpath).
@@ -151,8 +151,8 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Delete the dead embedded-redis pieces**
 
 ```bash
-git rm videopoker-api/src/test/java/net/bitbucketlist/videopoker/TestRedisConfiguration.java
-git rm videopoker-api/src/test/resources/application.properties
+git rm poker-api/src/test/java/net/bitbucketlist/poker/TestRedisConfiguration.java
+git rm poker-api/src/test/resources/application.properties
 ```
 
 (This removes the codebase's only `javax.*` imports and the obsolete `spring.redis.port=6370` property; `@ServiceConnection` supplies connection details at runtime, so no `spring.data.redis.*` property is needed anywhere.)
@@ -165,7 +165,7 @@ Replace the class annotations/imports so the header reads:
 package net.bitbucketlist.integration;
 
 // ... keep all existing imports EXCEPT the two removed below; add the five marked new
-import net.bitbucketlist.videopoker.VideoPokerApplication;
+import net.bitbucketlist.poker.PokerApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection; // new
 import org.testcontainers.containers.GenericContainer;                              // new
@@ -173,7 +173,7 @@ import org.testcontainers.junit.jupiter.Container;                              
 import org.testcontainers.junit.jupiter.Testcontainers;                             // new
 
 @Testcontainers
-@SpringBootTest(classes = VideoPokerApplication.class)
+@SpringBootTest(classes = PokerApplication.class)
 @AutoConfigureMockMvc
 class GameControllerIT {
 
@@ -183,7 +183,7 @@ class GameControllerIT {
 ```
 
 Removed: the `TestRedisConfiguration` import and its entry in `@SpringBootTest(classes = ...)`.
-`redis:alpine` matches `videopoker-api/docker-compose.yml`, so tests exercise the same image production-dev runs.
+`redis:alpine` matches `poker-api/docker-compose.yml`, so tests exercise the same image production-dev runs.
 Note on `@AutoConfigureMockMvc`: Boot 4 relocated module-specific test classes out of `org.springframework.boot.test.autoconfigure.web.servlet`; if the old import no longer resolves, use the relocated one from the webmvc test module (`org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`) — whichever the compiler accepts is the correct 4.1 location; record it in your report. Same rule for any other import the compiler rejects (e.g. `MockMvc` itself stays in `org.springframework.test.web.servlet`).
 
 - [ ] **Step 3: Run the full suite (Docker must be running)**
@@ -197,7 +197,7 @@ Expected: `clean`, `test` (unit: GameServiceTest, GameMapperTest, deck + scoring
 - [ ] **Step 4: Commit**
 
 ```bash
-git add -A videopoker-api/src/test
+git add -A poker-api/src/test
 git commit -m "Replace abandoned embedded-redis with Testcontainers
 
 GameControllerIT starts redis:alpine via @ServiceConnection; the
@@ -211,10 +211,10 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ### Task 3: DTOs to records
 
 **Files:**
-- Modify: `videopoker-api/src/main/java/net/bitbucketlist/videopoker/dto/CardDto.java`
-- Modify: `videopoker-api/src/main/java/net/bitbucketlist/videopoker/dto/GameDto.java`
-- Modify: `videopoker-api/src/main/java/net/bitbucketlist/videopoker/dto/PayoutsDto.java`
-- Modify: `videopoker-api/src/test/java/net/bitbucketlist/integration/GameControllerIT.java` (accessor renames only)
+- Modify: `poker-api/src/main/java/net/bitbucketlist/poker/dto/CardDto.java`
+- Modify: `poker-api/src/main/java/net/bitbucketlist/poker/dto/GameDto.java`
+- Modify: `poker-api/src/main/java/net/bitbucketlist/poker/dto/PayoutsDto.java`
+- Modify: `poker-api/src/test/java/net/bitbucketlist/integration/GameControllerIT.java` (accessor renames only)
 - Unchanged: `GameMapper`, `GameDtoBuilder`, `GameEntityBuilder` (all construct DTOs positionally — records keep the canonical constructor), `GameMapperTest` (relies on `equals`, which records provide).
 
 **Interfaces:**
@@ -226,10 +226,10 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 `CardDto.java`:
 
 ```java
-package net.bitbucketlist.videopoker.dto;
+package net.bitbucketlist.poker.dto;
 
-import net.bitbucketlist.videopoker.deck.Rank;
-import net.bitbucketlist.videopoker.deck.Suit;
+import net.bitbucketlist.poker.deck.Rank;
+import net.bitbucketlist.poker.deck.Suit;
 
 public record CardDto(Suit suit, Rank rank) {
 }
@@ -238,10 +238,10 @@ public record CardDto(Suit suit, Rank rank) {
 `GameDto.java`:
 
 ```java
-package net.bitbucketlist.videopoker.dto;
+package net.bitbucketlist.poker.dto;
 
-import net.bitbucketlist.videopoker.GameState;
-import net.bitbucketlist.videopoker.scoring.PokerHandEnum;
+import net.bitbucketlist.poker.GameState;
+import net.bitbucketlist.poker.scoring.PokerHandEnum;
 
 import java.util.List;
 import java.util.UUID;
@@ -261,9 +261,9 @@ public record GameDto(
 `PayoutsDto.java`:
 
 ```java
-package net.bitbucketlist.videopoker.dto;
+package net.bitbucketlist.poker.dto;
 
-import net.bitbucketlist.videopoker.scoring.PokerHandEnum;
+import net.bitbucketlist.poker.scoring.PokerHandEnum;
 
 import java.util.List;
 
@@ -291,7 +291,7 @@ Expected: all unit + integration tests PASS. `GameMapperTest`'s `isEqualTo` asse
 - [ ] **Step 4: Commit**
 
 ```bash
-git add videopoker-api/src
+git add poker-api/src
 git commit -m "Convert DTOs to records
 
 Positional construction sites (GameMapper, builders) are unchanged;
@@ -319,14 +319,14 @@ An OLD backend process (pre-upgrade jar under JDK 13) may still be running on po
 
 ```bash
 lsof -ti :8080 | xargs kill 2>/dev/null; sleep 2
-docker compose -f videopoker-api/docker-compose.yml up -d
-./gradlew :videopoker-api:bootRun   # background; ready on "Started VideoPokerApplication"
+docker compose -f poker-api/docker-compose.yml up -d
+./gradlew :poker-api:bootRun   # background; ready on "Started PokerApplication"
 ```
 
 - [ ] **Step 2: Run the untouched Playwright suite**
 
 ```bash
-cd videopoker-ui
+cd poker-ui
 export PATH="$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node" | grep '^v24' | sort -V | tail -1)/bin:$PATH"
 npm run e2e
 ```
@@ -349,7 +349,7 @@ with:
 
 - [ ] **Step 4: Update `CLAUDE.md`**
 
-- Overview line: `videopoker-api — Spring Boot 4.1 (Java 25) REST backend, game state stored in Redis`.
+- Overview line: `poker-api — Spring Boot 4.1 (Java 25) REST backend, game state stored in Redis`.
 - Backend commands section: DELETE the paragraph about needing a Java 11–13 JDK and the `JAVA_HOME` export example; replace with one line: `The build declares a Java 25 toolchain — any JDK 17+ can launch Gradle and it will locate/download JDK 25 itself.`
 - Replace the sentence saying tests don't need Docker (`TestRedisConfiguration` starts an embedded Redis on port 6370...) with: `Tests need Docker: GameControllerIT starts a redis:alpine Testcontainer via @ServiceConnection (no port/property config). Pure unit tests (service, mapper, deck, scoring) run without it.`
 - In "Running the app locally": remove the `# or: ./gradlew composeUp` alternative (plugin dropped).

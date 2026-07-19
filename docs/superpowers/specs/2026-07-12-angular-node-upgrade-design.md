@@ -1,4 +1,4 @@
-# videopoker-ui: Angular 22 + Node 24 Upgrade Design
+# poker-ui: Angular 22 + Node 24 Upgrade Design
 
 **Date:** 2026-07-12
 **Status:** Approved
@@ -25,13 +25,13 @@ migrations along the way — all for ~250 lines of app code and ~300 lines of
 specs. Instead:
 
 1. Generate a fresh Angular 22 workspace (`ng new`: no routing, CSS, Vitest).
-2. Replace the contents of `videopoker-ui/` with it in place (same path, git
+2. Replace the contents of `poker-ui/` with it in place (same path, git
    history preserved as modifications).
 3. Port the app code and tests into modern idioms.
 
 ## Workspace
 
-- **Node:** 24 LTS, pinned via `videopoker-ui/.nvmrc`.
+- **Node:** 24 LTS, pinned via `poker-ui/.nvmrc`.
 - **Angular:** 22.0.x, standalone bootstrap (`bootstrapApplication` +
   `provideHttpClient()`), no NgModule, no routing.
 - **Styling:** Bootstrap bumped to 5.3.x (npm dependency, as today). Existing
@@ -89,7 +89,7 @@ Preserved behavior, explicitly:
 ## Delivery
 
 - All work on a feature branch; nothing pushed without explicit permission.
-- Docs updated: `videopoker-ui/README.md` (regenerated + customized), root
+- Docs updated: `poker-ui/README.md` (regenerated + customized), root
   `README.md` (Node 24 prerequisite for the UI), `CLAUDE.md` (new UI commands:
   Vitest, Playwright, `.nvmrc`).
 

@@ -1,4 +1,4 @@
-# videopoker-api: Spring Boot 4.1 + Java 25 + Gradle 9.6 Upgrade Design
+# poker-api: Spring Boot 4.1 + Java 25 + Gradle 9.6 Upgrade Design
 
 **Date:** 2026-07-12
 **Status:** Approved
@@ -27,7 +27,7 @@ behavior-preservation net, alongside the ported unit/integration tests.
   `~/Library/Java/JavaVirtualMachines/azul-13.0.14/Contents/Home`; everything
   after runs on JDK 25.
 - **Java:** Homebrew OpenJDK 25 (`/opt/homebrew/Cellar/openjdk/...`, already
-  the shell default). `videopoker-api/build.gradle` declares a Java toolchain
+  the shell default). `poker-api/build.gradle` declares a Java toolchain
   (`languageVersion = JavaLanguageVersion.of(25)`) so builds stop depending on
   `JAVA_HOME`.
 - **Spring Boot:** plugin and BOM 4.1.0 (Spring Framework 7).

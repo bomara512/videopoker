@@ -1,0 +1,35 @@
+package net.bitbucketlist.poker.persistence;
+
+import lombok.Data;
+import lombok.NonNull;
+import net.bitbucketlist.poker.GameState;
+import net.bitbucketlist.poker.deck.Card;
+import net.bitbucketlist.poker.deck.Deck;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@RedisHash(value = "games", timeToLive = 60 * 60 * 24 * 7)
+public class GameEntity {
+    @Id
+    private UUID id;
+
+    @NonNull
+    private Deck deck;
+
+    @NonNull
+    private Integer bet;
+
+    @NonNull
+    private List<Card> hand = new ArrayList<>();
+
+    @NonNull
+    private GameState gameState = GameState.READY_TO_DEAL;
+
+    @NonNull
+    private Integer credits;
+}
