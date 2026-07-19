@@ -1,5 +1,9 @@
 # ♥ ♠ Poker ♣ ♦
 
+<p align="center">
+  <img src="poker-ui/public/assets/cards/aces.png" alt="Four aces fanned out" width="480">
+</p>
+
 Backend for a simple poker game. Springboard to more ambitious multi-player card games.
 
 AI only used for significant framework upgrades: Angular 11 → 22 (Node 12 → 24) and Spring Boot 2.3.4 → 4.1 (Java 11 → 25, Gradle 6.3 → 9.6.1).
