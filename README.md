@@ -1,12 +1,10 @@
-# ♥ ♠ Poker ♣ ♦
-
 <p align="center">
   <img src="poker-ui/public/assets/cards/aces.png" alt="Four aces fanned out" width="480">
 </p>
 
 Backend for a simple poker game. Springboard to more ambitious multi-player card games.
 
-This is a hand-written project — I keep AI out of the day-to-day coding to stay sharp at writing code myself. The exceptions so far: AI handled the big framework upgrades (Angular 11 → 22 with Node 12 → 24, Spring Boot 2.3.4 → 4.1 with Java 11 → 25, Gradle 6.3 → 9.6.1) and project metadata like this README, which worked well.
+This is a hand-written project — I keep AI out of the day-to-day coding to stay sharp at writing code myself. The exceptions so far: AI handled the big framework upgrades (Angular 11 → 22 with Node 12 → 24, Spring Boot 2.3.4 → 4.1 with Java 11 → 25, Gradle 6.3 → 9.6.1), security updates, and project metadata like this README. Seems like a good balance.
 
 Current state is rudimentary. Run locally with dockerized redis, and either the Angular UI (`poker-ui`) or curl.
 
